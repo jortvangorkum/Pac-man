@@ -5,12 +5,14 @@
 
 module Model where
 
+import Data.List
+
 
 {-
   Initialization
 -}
-initialGameGrid :: Grid
-initialGameGrid = Grid 28 31 [
+initialGameTiles :: [Tile]
+initialGameTiles = [
   w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w,
   w, d, d, d, d, d, d, d, d, d, d, d, d, w, w, d, d, d, d, d, d, d, d, d, d, d, d, w,
   w, d, w, w, w, w, d, w, w, w, w, w, d, w, w, d, w, w, w, w, w, d, w, w, w, w, d, w,
@@ -41,15 +43,23 @@ initialGameGrid = Grid 28 31 [
   w, d, w, w, w, w, w, w, w, w, w, w, d, w, w, d, w, w, w, w, w, w, w, w, w, w, d, w,
   w, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, w,
   w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w
-  ] 
+  ]
   where 
     w = Wall
     d = Edible
     e = Empty
 
+initialGameGrid :: Grid
+initialGameGrid = Grid 28 30 (parseGrid initialGameTiles 28 30)
 
 initialState :: GameState
-initialState = GameState 0 Playing Chase initialGameGrid (PacMan 3 (Position 0 0) North) [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
+initialState = GameState 
+  0 
+  Playing 
+  Chase 
+  initialGameGrid
+  (PacMan 3 (Position 0 0) North) 
+  [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
 
 secondsBetweenCycles :: Float
 secondsBetweenCycles = 5
@@ -102,7 +112,19 @@ data GhostMode = Chase | Scatter | Frightened
 data Position = Position Int Int
 data Direction = North | East | South | West
 data Tile = Empty | Wall | Edible 
-data Grid = Grid { width :: Int,  height :: Int, tiles :: [Tile] }
+data Grid = Grid { width :: Int,  height :: Int, tiles :: [(Tile, Int, Int)] }
+
+halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
+halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
+
+tileSize :: Int
+tileSize = 30
 
 windowSizeFromGrid :: Grid -> (Int, Int)
-windowSizeFromGrid (Grid w h _) = (w * 30, h * 30) 
+windowSizeFromGrid (Grid w h _) = (w * tileSize, h * tileSize) 
+
+parseGrid :: [Tile] -> Int -> Int -> [(Tile, Int, Int)]
+parseGrid tiles width height = zip3 tiles columnIndexArray rowIndexArray
+  where 
+    columnIndexArray = (concat . replicate height) [0 .. width - 1]
+    rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]

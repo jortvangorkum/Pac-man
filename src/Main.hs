@@ -12,7 +12,7 @@ import Graphics.Gloss.Interface.IO.Game
 -}
 
 window :: Display
-window = InWindow "Pac-Man" (windowSizeFromGrid initialGameGrid) (0,0)
+window = InWindow "Pac-Man" (windowSizeFromGrid initialGameGrid) (0, 0)
 
 background :: Color
 background = black
