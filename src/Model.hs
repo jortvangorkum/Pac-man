@@ -1,18 +1,66 @@
 -- | This module contains the data types
 --   which represent the state of the game
+
+{-# LANGUAGE DuplicateRecordFields #-}
+
 module Model where
 
-data InfoToShow = ShowNothing
-                | ShowANumber Int
-                | ShowAChar   Char
 
-nO_SECS_BETWEEN_CYCLES :: Float
-nO_SECS_BETWEEN_CYCLES = 5
-
-data GameState = GameState {
-                   infoToShow  :: InfoToShow
-                 , elapsedTime :: Float
-                 }
-
+{-
+  Initialization
+-}
 initialState :: GameState
-initialState = GameState ShowNothing 0
+initialState = GameState 0 Playing Chase (Grid 60 60 []) (PacMan 3 (Position 0 0)) [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
+
+secondsBetweenCycles :: Float
+secondsBetweenCycles = 5
+
+{-
+  Game state models
+-}
+data GameState = GameState { 
+  -- name
+  elapsedTime :: Float,
+  playState :: PlayState,
+
+  -- name
+  ghostMode  :: GhostMode,
+
+  -- name
+  grid :: Grid,
+
+  -- name
+  player :: Player,
+  enemies :: [Enemy]
+}
+
+data PlayState = Playing | Paused | Finished
+
+{-
+  Name
+  TODO: rename position
+-}
+data Player = PacMan { lives :: Int, position :: Position }
+data Enemy = 
+  Blinky { position :: Position } 
+  | Pinky { position :: Position } 
+  | Inky { position :: Position } 
+  | Clyde { position :: Position } 
+
+{-
+  Name
+-}
+data Edible = PacDot | PacFruit
+
+{-
+  Name
+-}
+data GhostMode = Chase | Scatter | Frightened
+
+{-
+  Name
+-}
+-- Position x y
+data Position = Position Int Int
+data Tile = Empty | Wall | Edible
+data Grid = Grid { width :: Int,  height :: Int, tiles :: [Tile] }
