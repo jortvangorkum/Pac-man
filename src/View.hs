@@ -9,16 +9,20 @@ view :: GameState -> IO Picture
 view = return . viewPure
 
 tileToPicture :: (Tile, Int, Int) -> Picture
-tileToPicture (tile, _x, _y) = translate t' (-t') $ translate x y $ c $ rectangleSolid t t
+tileToPicture (tile, _x, _y) = translate t' (-t') $ translate x y $ c $ o
   where
     x = fromIntegral _x * t
     y = -(fromIntegral _y * t)
     t = fromIntegral tileSize
     t' = t / 2
     c = case tile of
-      Wall -> color red
-      Empty -> color black
-      Edible -> color yellow
+      Wall    -> color red
+      Empty   -> color black
+      Edible  -> color yellow
+    o = case tile of
+      Edible  -> circleSolid (t / 8)
+      _       -> rectangleSolid t t
+
 
 viewPure :: GameState -> Picture
 viewPure gstate = pictures (map translateToUpperLeft picturesFromTiles)
