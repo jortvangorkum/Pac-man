@@ -6,6 +6,7 @@ version:             0.1.0.0
 author:              Jort van Gorkum, Vince van Noort
 maintainer:          j.vangorkum@students.uu.nl, v.n.vannoort@students.uu.nl
 category:            Game
+build-type:          Simple
 extra-source-files:  ChangeLog.md, README.md
 cabal-version:       >=1.10
 
