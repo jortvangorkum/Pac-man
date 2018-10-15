@@ -39,7 +39,7 @@ data PlayState = Playing | Paused | Finished
 {-
   Name
 -}
-data Player = PacMan { lives :: Int, pos :: Position }
+data Player = PacMan { lives :: Int, pos :: Position, direction :: Direction }
 data Enemy = 
   Blinky { pos :: Position } 
   | Pinky { pos :: Position } 
@@ -61,5 +61,6 @@ data GhostMode = Chase | Scatter | Frightened
 -}
 -- Position x y
 data Position = Position Int Int
+data Direction = Up | Right | Down | Left
 data Tile = Empty | Wall | Edible
 data Grid = Grid { width :: Int,  height :: Int, tiles :: [Tile] }
