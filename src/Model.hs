@@ -38,14 +38,13 @@ data PlayState = Playing | Paused | Finished
 
 {-
   Name
-  TODO: rename position
 -}
-data Player = PacMan { lives :: Int, position :: Position }
+data Player = PacMan { lives :: Int, pos :: Position }
 data Enemy = 
-  Blinky { position :: Position } 
-  | Pinky { position :: Position } 
-  | Inky { position :: Position } 
-  | Clyde { position :: Position } 
+  Blinky { pos :: Position } 
+  | Pinky { pos :: Position } 
+  | Inky { pos :: Position } 
+  | Clyde { pos :: Position } 
 
 {-
   Name
