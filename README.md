@@ -1,4 +1,4 @@
 # How to run pac-man project
-```haskell
+```bash
 cabal run
 ```
