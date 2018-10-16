@@ -1,8 +1,6 @@
 -- | This module contains the data types
 --   which represent the state of the game
 
-{-# LANGUAGE DuplicateRecordFields #-}
-
 module Model where
 
 import Data.List
@@ -93,12 +91,12 @@ data PlayState = Playing | Paused | Finished
 {-
   Name
 -}
-data Player = PacMan { lives :: Int, pos :: Position, direction :: Direction }
+data Player = PacMan { lives :: Int, posPlayer :: Position, direction :: Direction }
 data Enemy = 
-  Blinky { pos :: Position } 
-  | Pinky { pos :: Position } 
-  | Inky { pos :: Position } 
-  | Clyde { pos :: Position } 
+  Blinky { posEnemy :: Position } 
+  | Pinky { posEnemy :: Position } 
+  | Inky { posEnemy :: Position } 
+  | Clyde { posEnemy :: Position } 
 
 {-
   Name

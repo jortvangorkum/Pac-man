@@ -10,7 +10,6 @@ import Graphics.Gloss.Interface.IO.Game
 {-
   Settings for Display
 -}
-
 window :: Display
 window = InWindow "Pac-Man" (windowSizeFromGrid initialGameGrid) (0, 0)
 
@@ -23,7 +22,6 @@ frames = 10
 {-
   Main function
 -}
-
 main :: IO ()
 main = playIO window           -- Or FullScreen
               background       -- Background color
