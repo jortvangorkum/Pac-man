@@ -17,7 +17,7 @@ background :: Color
 background = black
 
 frames :: Int
-frames = 10
+frames = 60
 
 {-
   Main function
