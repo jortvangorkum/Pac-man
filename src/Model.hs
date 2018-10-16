@@ -49,8 +49,13 @@ initialGameTiles = [
     d = PacDot
     e = Empty
 
+gameGridWidth :: Int
+gameGridWidth = 28
+gameGridHeight :: Int
+gameGridHeight = 30
+
 initialGameGrid :: Grid
-initialGameGrid = Grid 28 30 (parseGrid initialGameTiles 28 30)
+initialGameGrid = Grid gameGridWidth gameGridHeight (parseGrid initialGameTiles gameGridWidth gameGridHeight)
 
 initialState :: GameState
 initialState = GameState 
