@@ -46,7 +46,7 @@ initialGameTiles = [
   ]
   where 
     w = Wall
-    d = Edible
+    d = PacDot
     e = Empty
 
 initialGameGrid :: Grid
@@ -98,11 +98,6 @@ data Enemy =
 {-
   Name
 -}
-data Edible = PacDot | PacFruit
-
-{-
-  Name
--}
 data GhostMode = Chase | Scatter | Frightened
 
 {-
@@ -111,7 +106,7 @@ data GhostMode = Chase | Scatter | Frightened
 -- Position x y
 data Position = Position Int Int
 data Direction = North | East | South | West
-data Tile = Empty | Wall | Edible 
+data Tile = Empty | Wall | PacDot | PacFruit
 data Grid = Grid { width :: Int,  height :: Int, tiles :: [(Tile, Int, Int)] }
 
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)

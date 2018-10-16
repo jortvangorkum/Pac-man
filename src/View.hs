@@ -16,12 +16,13 @@ tileToPicture (tile, _x, _y) = translate t' (-t') $ translate x y $ c $ o
     t = fromIntegral tileSize
     t' = t / 2
     c = case tile of
-      Wall    -> color red
-      Empty   -> color black
-      Edible  -> color yellow
+      Wall      -> color red
+      Empty     -> color black
+      PacDot    -> color yellow
+      PacFruit  -> color blue
     o = case tile of
-      Edible  -> circleSolid (t / 8)
-      _       -> rectangleSolid t t
+      PacDot    -> circleSolid (t / 8)
+      _         -> rectangleSolid t t
 
 
 viewPure :: GameState -> Picture
