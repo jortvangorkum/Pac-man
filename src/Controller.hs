@@ -15,8 +15,8 @@ step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
-      grid = gridByNextMove (grid gstate) (player gstate),
-      player = tryMove (player gstate) (grid gstate), 
+      player = playerAfterUpdate, 
+      grid = gridAfterUpdate (grid gstate) playerAfterUpdate,
       elapsedTime = 0 
     }
   -- Just update the elapsed time
@@ -24,6 +24,8 @@ step secs gstate
     return $ gstate { 
       elapsedTime = elapsedTime gstate + secs 
     }
+  where
+    playerAfterUpdate = tryMove (player gstate) (grid gstate)
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -49,10 +51,8 @@ direct player direction' = player { direction = direction' }
 
 tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = case nextTile of
-  PacDot   -> playerNewDirection
-  PacFruit -> playerNewDirection
-  Empty    -> playerNewDirection
   Wall     -> playerWithUpdatedIntendedDirection
+  _        -> playerNewDirection
   where
     playerWithUpdatedIntendedDirection = player { intendedDirection = direction' }
     playerNewDirection = direct playerWithUpdatedIntendedDirection direction' 
@@ -73,30 +73,24 @@ tryMove player grid =
     update the direction of the player
   -}
   case nextTileIntendedDirection of
-    PacDot   -> move (direct player playerIntendedDirection) playerIntendedDirection
-    PacFruit -> move (direct player playerIntendedDirection) playerIntendedDirection
-    Empty    -> move (direct player playerIntendedDirection) playerIntendedDirection
-    _        -> case nextTile of
-        PacDot   -> move player (direction player)
-        PacFruit -> move player (direction player)
-        Empty    -> move player (direction player)
-        _        -> player
+    Wall       -> checkNextTile
+    _          -> move (direct player playerIntendedDirection) playerIntendedDirection
   where 
     playerDirection = direction player
     playerIntendedDirection = intendedDirection player
     nextTile = getTileFromGrid grid (getNextPositionFromPlayer player)
     nextTileIntendedDirection = getTileFromGrid grid (getNextPositionFromPlayer (direct player playerIntendedDirection))
+    checkNextTile = case nextTile of
+        Wall     -> player
+        _        -> move player (direction player)
 
-getNextPositionFromPlayerByIntention :: Player -> Grid -> Position
-getNextPositionFromPlayerByIntention player grid = posPlayer (tryMove player grid)
-
-gridByNextMove :: Grid -> Player -> Grid
-gridByNextMove grid player = case nextTile of
-  PacDot   -> updateTileOfGrid grid nextPosition Empty
-  PacFruit -> updateTileOfGrid grid nextPosition Empty
+gridAfterUpdate :: Grid -> Player -> Grid
+gridAfterUpdate grid playerAfterUpdate = case tile of
+  PacDot   -> updateTileOfGrid grid positionAfterUpdate Empty
+  PacFruit -> updateTileOfGrid grid positionAfterUpdate Empty
   _        -> grid
   where
-    nextPosition = getNextPositionFromPlayerByIntention player grid
-    nextTile = getTileFromGrid grid nextPosition
+    positionAfterUpdate = posPlayer playerAfterUpdate
+    tile = getTileFromGrid grid positionAfterUpdate
 
   
