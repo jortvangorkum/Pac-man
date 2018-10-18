@@ -27,9 +27,10 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
       Wall      -> color red
       Empty     -> color black
       PacDot    -> color white
-      PacFruit  -> color blue
+      PacFruit  -> color white
     o = case tile of
       PacDot    -> circleSolid (t / 8)
+      PacFruit  -> circleSolid (t / 3)
       _         -> rectangleSolid t t
 
 

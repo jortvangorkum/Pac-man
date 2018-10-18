@@ -52,9 +52,10 @@ direct player direction' = player { direction = direction' }
 
 tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = case nextTile of
-  PacDot -> playerNewDirection
-  Empty -> playerNewDirection
-  Wall -> playerWithUpdatedIntendedDirection
+  PacDot   -> playerNewDirection
+  PacFruit -> playerNewDirection
+  Empty    -> playerNewDirection
+  Wall     -> playerWithUpdatedIntendedDirection
   where
     playerWithUpdatedIntendedDirection = player { intendedDirection = direction' }
     playerNewDirection = direct playerWithUpdatedIntendedDirection direction' 
@@ -75,12 +76,14 @@ tryMove player grid =
     update the direction of the player
   -}
   case nextTileIntendedDirection of
-    PacDot -> move (direct player playerIntendedDirection) playerIntendedDirection
-    Empty  -> move (direct player playerIntendedDirection) playerIntendedDirection
-    _      -> case nextTile of
-        PacDot  -> move player (direction player)
-        Empty   -> move player (direction player)
-        _       -> player
+    PacDot   -> move (direct player playerIntendedDirection) playerIntendedDirection
+    PacFruit -> move (direct player playerIntendedDirection) playerIntendedDirection
+    Empty    -> move (direct player playerIntendedDirection) playerIntendedDirection
+    _        -> case nextTile of
+        PacDot   -> move player (direction player)
+        PacFruit -> move player (direction player)
+        Empty    -> move player (direction player)
+        _        -> player
   where 
     playerDirection = direction player
     playerIntendedDirection = intendedDirection player
@@ -92,8 +95,9 @@ getNextPositionFromPlayerByIntention player grid = posPlayer (tryMove player gri
 
 gridByNextMove :: Grid -> Player -> Grid
 gridByNextMove grid player = case nextTile of
-  PacDot -> updateTileOfGrid grid nextPosition Empty
-  _ -> grid
+  PacDot   -> updateTileOfGrid grid nextPosition Empty
+  PacFruit -> updateTileOfGrid grid nextPosition Empty
+  _        -> grid
   where
     nextPosition = getNextPositionFromPlayerByIntention player grid
     nextTile = getTileFromGrid grid nextPosition
