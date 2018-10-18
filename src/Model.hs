@@ -142,6 +142,9 @@ getTileFromGrid (Grid _ _ tiles) position = case lookup (indexFromPosition posit
 getTileFromTuple :: (Tile, Int, Int) -> Tile
 getTileFromTuple (tile, _, _) = tile
 
+getNextTileFromPlayer :: Player -> Grid -> Tile
+getNextTileFromPlayer player grid = getTileFromGrid grid (getNextPositionFromPlayer player)
+
 getNextPositionFromPlayer :: Player -> Position
 getNextPositionFromPlayer player@PacMan{direction = North, posPlayer = (Position x y)} = Position x (y-1)
 getNextPositionFromPlayer player@PacMan{direction = East, posPlayer = (Position x y)}  = Position (x+1) y

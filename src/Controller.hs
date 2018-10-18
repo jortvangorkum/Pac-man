@@ -78,8 +78,8 @@ tryMove player grid =
   where 
     playerDirection = direction player
     playerIntendedDirection = intendedDirection player
-    nextTile = getTileFromGrid grid (getNextPositionFromPlayer player)
-    nextTileIntendedDirection = getTileFromGrid grid (getNextPositionFromPlayer (direct player playerIntendedDirection))
+    nextTile = getNextTileFromPlayer player grid
+    nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
         Wall     -> player
         _        -> move player (direction player)
