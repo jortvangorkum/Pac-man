@@ -3,7 +3,9 @@
 
 module Model where
 
-import Data.List
+import Prelude hiding (lookup, zip3)
+import Data.List hiding (lookup)
+import Data.Sequence hiding (zip3, replicate, Empty)
 
 
 {-
@@ -57,11 +59,12 @@ initialGameGrid = Grid gameGridWidth gameGridHeight (parseGrid initialGameTiles 
 
 initialState :: GameState
 initialState = GameState 
-  0 
-  Playing 
-  Chase 
-  initialGameGrid
-  (PacMan 3 (Position 1 1) East) 
+  0                               -- elapsed time
+  Playing                         -- play state
+  East                            -- direction
+  Chase                           -- ghost mode
+  initialGameGrid                 -- grid
+  (PacMan 3 (Position 1 1) East)  -- pacman
   [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
 
 secondsBetweenCycles :: Float
@@ -74,6 +77,7 @@ data GameState = GameState {
   -- name
   elapsedTime :: Float,
   playState :: PlayState,
+  nextDirection :: Direction,
 
   -- name
   ghostMode  :: GhostMode,
@@ -110,7 +114,7 @@ data GhostMode = Chase | Scatter | Frightened
 data Position = Position Int Int deriving (Show)
 data Direction = North | East | South | West deriving (Show)  
 data Tile = Empty | Wall | PacDot | PacFruit deriving (Show)  
-data Grid = Grid { width :: Int,  height :: Int, tiles :: [(Tile, Int, Int)] }
+data Grid = Grid { width :: Int,  height :: Int, tiles :: Seq (Tile, Int, Int) }
 
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
 halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
@@ -121,14 +125,17 @@ tileSize = 30
 windowSizeFromGrid :: Grid -> (Int, Int)
 windowSizeFromGrid (Grid w h _) = (w * tileSize, h * tileSize) 
 
-parseGrid :: [Tile] -> Int -> Int -> [(Tile, Int, Int)]
-parseGrid tiles width height = zip3 tiles columnIndexArray rowIndexArray
+parseGrid :: [Tile] -> Int -> Int -> Seq (Tile, Int, Int)
+parseGrid tiles width height = fromList (zip3 tiles columnIndexArray rowIndexArray)
   where 
     columnIndexArray = (concat . replicate height) [0 .. width - 1]
     rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]
 
 getTileFromGrid :: Grid -> Position -> Tile
-getTileFromGrid (Grid _ _ tiles) (Position x y) = getTileFromTuple (tiles !! (x + gameGridWidth * y))
+getTileFromGrid (Grid _ _ tiles) (Position x y) = case lookup (x + gameGridWidth * y) tiles of
+  Just (tile, _, _) -> tile
+  -- maybe return something else here, since apperently, there is not tile at the given position
+  _                 -> Wall
 
 getTileFromTuple :: (Tile, Int, Int) -> Tile
 getTileFromTuple (tile, _, _) = tile
@@ -138,3 +145,5 @@ getNextPositionFromPlayer player@PacMan{direction = North, posPlayer = (Position
 getNextPositionFromPlayer player@PacMan{direction = East, posPlayer = (Position x y)}  = Position (x+1) y
 getNextPositionFromPlayer player@PacMan{direction = South, posPlayer = (Position x y)} = Position x (y+1)
 getNextPositionFromPlayer player@PacMan{direction = West, posPlayer = (Position x y)}  = Position (x-1) y
+
+-- updateTileOfGrid :: Grid -> Position -> Tile -> Grid

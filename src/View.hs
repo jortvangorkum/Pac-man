@@ -4,6 +4,7 @@ module View where
 
 import Graphics.Gloss
 import Model
+import Data.Foldable (toList)
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
@@ -38,13 +39,12 @@ viewPure gstate = pictures [viewTiles gstate, viewPlayer gstate]
 viewTiles :: GameState -> Picture
 viewTiles gstate = pictures picturesFromTiles
   where
-    picturesFromTiles = map tileToPicture tilesFromGameState
+    picturesFromTiles = map tileToPicture (toList tilesFromGameState)
     tilesFromGameState = (tiles . grid) gstate
 
 viewPlayer :: GameState -> Picture
 viewPlayer gstate = case playerFromGameState of
   PacMan {}  -> viewPacMan playerFromGameState
-  _       -> error "Player type not found."
   where
     playerFromGameState = player gstate
 
