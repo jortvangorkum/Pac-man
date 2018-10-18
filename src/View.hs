@@ -5,6 +5,7 @@ module View where
 import Graphics.Gloss
 import Model
 import Data.Foldable (toList)
+import Data.Sequence hiding (zip3, replicate, Empty)
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
@@ -35,21 +36,31 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
 
 
 viewPure :: GameState -> Picture
-viewPure gstate = pictures [viewTiles gstate, viewPlayer gstate]
+viewPure gstate = pictures [viewTiles ((tiles . grid) gstate), viewPlayer (player gstate), viewEnemies (enemies gstate)]
 
-viewTiles :: GameState -> Picture
-viewTiles gstate = pictures picturesFromTiles
-  where
-    picturesFromTiles = map tileToPicture (toList tilesFromGameState)
-    tilesFromGameState = (tiles . grid) gstate
+viewTiles :: Seq (Tile, Int, Int) -> Picture
+viewTiles tiles = pictures $ map tileToPicture (toList tiles)
 
-viewPlayer :: GameState -> Picture
-viewPlayer gstate = case playerFromGameState of
-  PacMan {}  -> viewPacMan playerFromGameState
-  where
-    playerFromGameState = player gstate
+viewPlayer :: Player -> Picture
+viewPlayer player = case player of
+  PacMan {}  -> viewPacMan player
 
 viewPacMan :: Player -> Picture
 viewPacMan (PacMan _ position@(Position x y) _ _) = translateToGrid x y $ color yellow $ circleSolid size
   where
     size = fromIntegral tileSize / 2
+
+
+viewEnemies :: [Enemy] -> Picture
+viewEnemies enemies = pictures $ map viewEnemy enemies
+
+viewEnemy :: Enemy -> Picture
+viewEnemy enemy = translateToGrid x y $ ghostColor $ circleSolid size 
+  where
+    (Position x y) = posEnemy enemy
+    size = fromIntegral tileSize / 2
+    ghostColor = case enemy of
+      (Blinky _) -> color red
+      (Pinky _) -> color white
+      (Inky _) -> color blue
+      (Clyde _) -> color orange

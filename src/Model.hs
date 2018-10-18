@@ -65,7 +65,7 @@ initialState = GameState
   Chase                                -- ghost mode
   initialGameGrid                      -- grid
   (PacMan 3 (Position 1 1) East East)  -- pacman
-  [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
+  [Blinky (Position 12 13), Pinky (Position 13 13), Inky (Position 14 13), Clyde (Position 15 13)]
 
 secondsBetweenCycles :: Float
 secondsBetweenCycles = 1 / 3
