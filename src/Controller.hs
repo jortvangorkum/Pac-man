@@ -17,14 +17,7 @@ step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
-    do 
-      -- print "Current: "
-      -- print (posPlayer (player gstate))
-      -- print (getTileFromGrid (grid gstate) (posPlayer (player gstate)))
-      -- print "Next: "
-      -- print (getNextPositionFromPlayer (player gstate))
-      -- print (getTileFromGrid (grid gstate) (getNextPositionFromPlayer (player gstate)))
-      return $ gstate {player = tryMove (player gstate) (grid gstate), elapsedTime = 0 }
+    return $ gstate {player = tryMove (player gstate) (grid gstate), elapsedTime = 0 }
   -- Just update the elapsed time
   | otherwise = 
     return $ gstate { elapsedTime = elapsedTime gstate + secs }
