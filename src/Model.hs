@@ -116,6 +116,9 @@ data Direction = North | East | South | West deriving (Show)
 data Tile = Empty | Wall | PacDot | PacFruit deriving (Show)  
 data Grid = Grid { width :: Int,  height :: Int, tiles :: Seq (Tile, Int, Int) }
 
+indexFromPosition :: Position -> Int
+indexFromPosition (Position x y) = x + gameGridWidth * y
+
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
 halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
 
@@ -132,7 +135,7 @@ parseGrid tiles width height = fromList (zip3 tiles columnIndexArray rowIndexArr
     rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]
 
 getTileFromGrid :: Grid -> Position -> Tile
-getTileFromGrid (Grid _ _ tiles) (Position x y) = case lookup (x + gameGridWidth * y) tiles of
+getTileFromGrid (Grid _ _ tiles) position = case lookup (indexFromPosition position) tiles of
   Just (tile, _, _) -> tile
   -- maybe return something else here, since apperently, there is not tile at the given position
   _                 -> Wall
@@ -146,4 +149,5 @@ getNextPositionFromPlayer player@PacMan{direction = East, posPlayer = (Position 
 getNextPositionFromPlayer player@PacMan{direction = South, posPlayer = (Position x y)} = Position x (y+1)
 getNextPositionFromPlayer player@PacMan{direction = West, posPlayer = (Position x y)}  = Position (x-1) y
 
--- updateTileOfGrid :: Grid -> Position -> Tile -> Grid
+updateTileOfGrid :: Grid -> Position -> Tile -> Grid
+updateTileOfGrid grid position@(Position x y) tile = grid { tiles = update (indexFromPosition position) (tile, x, y) (tiles grid) }

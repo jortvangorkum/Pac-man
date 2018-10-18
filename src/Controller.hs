@@ -18,7 +18,7 @@ step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
-      -- grid = gridByNextMove (grid gstate) (player gstate),
+      grid = gridByNextMove (grid gstate) (player gstate),
       player = tryMove (player gstate) (grid gstate), 
       elapsedTime = 0 
     }
@@ -53,6 +53,7 @@ direct player direction' = player { direction = direction' }
 tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = case nextTile of
   PacDot -> playerNewDirection
+  Empty -> playerNewDirection
   Wall -> player
   where
     nextTile = getTileFromGrid grid (getNextPositionFromPlayer playerNewDirection)
@@ -67,15 +68,17 @@ move player@PacMan{posPlayer = (Position x y)} West = player { posPlayer = Posit
 tryMove :: Player -> Grid -> Player
 tryMove player grid = case nextTile of
   PacDot -> move player (direction player)
+  Empty -> move player (direction player)
   Wall -> player
   where 
     nextTile = getTileFromGrid grid (getNextPositionFromPlayer player)
 
--- gridByNextMove :: Grid -> Player -> Grid
--- gridByNextMove grid player = case nextTile of
---   PacDot -> grid -- remove pacdot
---   _ -> grid
---     where
---       nextTile = getTileFromGrid grid (getNextPositionFromPlayer player)
+gridByNextMove :: Grid -> Player -> Grid
+gridByNextMove grid player = case nextTile of
+  PacDot -> updateTileOfGrid grid nextPosition Empty
+  _ -> grid
+  where
+    nextPosition = getNextPositionFromPlayer player
+    nextTile = getTileFromGrid grid nextPosition
 
   
