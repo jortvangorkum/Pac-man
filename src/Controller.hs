@@ -10,16 +10,13 @@ import System.Random
 import Data.Char
 
 -- | Handle one iteration of the game
--- step :: Float -> GameState -> IO GameState
--- step secs gstate = return $ gstate { elapsedTime = elapsedTime gstate + secs }
-
 step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
       grid = gridByNextMove (grid gstate) (player gstate),
-      player = tryMove (player gstate)(grid gstate), 
+      player = tryMove (player gstate) (grid gstate), 
       elapsedTime = 0 
     }
   -- Just update the elapsed time
