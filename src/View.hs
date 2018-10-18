@@ -49,6 +49,6 @@ viewPlayer gstate = case playerFromGameState of
     playerFromGameState = player gstate
 
 viewPacMan :: Player -> Picture
-viewPacMan (PacMan _ position@(Position x y) direction) = translateToGrid x y $ color yellow $ circleSolid size
+viewPacMan (PacMan _ position@(Position x y) _ _) = translateToGrid x y $ color yellow $ circleSolid size
   where
     size = fromIntegral tileSize / 2

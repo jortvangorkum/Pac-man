@@ -59,12 +59,11 @@ initialGameGrid = Grid gameGridWidth gameGridHeight (parseGrid initialGameTiles 
 
 initialState :: GameState
 initialState = GameState 
-  0                               -- elapsed time
-  Playing                         -- play state
-  East                            -- direction
-  Chase                           -- ghost mode
-  initialGameGrid                 -- grid
-  (PacMan 3 (Position 1 1) East)  -- pacman
+  0                                    -- elapsed time
+  Playing                              -- play state
+  Chase                                -- ghost mode
+  initialGameGrid                      -- grid
+  (PacMan 3 (Position 1 1) East East)  -- pacman
   [Blinky (Position 0 0), Pinky (Position 0 0), Inky (Position 0 0), Clyde (Position 0 0)]
 
 secondsBetweenCycles :: Float
@@ -77,7 +76,6 @@ data GameState = GameState {
   -- name
   elapsedTime :: Float,
   playState :: PlayState,
-  nextDirection :: Direction,
 
   -- name
   ghostMode  :: GhostMode,
@@ -95,7 +93,7 @@ data PlayState = Playing | Paused | Finished
 {-
   Name
 -}
-data Player = PacMan { lives :: Int, posPlayer :: Position, direction :: Direction }
+data Player = PacMan { lives :: Int, posPlayer :: Position, direction :: Direction, intendedDirection :: Direction }
 data Enemy = 
   Blinky { posEnemy :: Position } 
   | Pinky { posEnemy :: Position } 
@@ -111,9 +109,9 @@ data GhostMode = Chase | Scatter | Frightened
   Name
 -}
 -- Position x y
-data Position = Position Int Int deriving (Show)
-data Direction = North | East | South | West deriving (Show)  
-data Tile = Empty | Wall | PacDot | PacFruit deriving (Show)  
+data Position = Position Int Int deriving (Show, Eq)
+data Direction = North | East | South | West deriving (Show, Eq)  
+data Tile = Empty | Wall | PacDot | PacFruit deriving (Show, Eq)  
 data Grid = Grid { width :: Int,  height :: Int, tiles :: Seq (Tile, Int, Int) }
 
 indexFromPosition :: Position -> Int

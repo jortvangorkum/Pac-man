@@ -19,7 +19,7 @@ step secs gstate
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
       grid = gridByNextMove (grid gstate) (player gstate),
-      player = tryMove (player gstate) (grid gstate), 
+      player = tryMove (player gstate)(grid gstate), 
       elapsedTime = 0 
     }
   -- Just update the elapsed time
@@ -54,10 +54,11 @@ tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = case nextTile of
   PacDot -> playerNewDirection
   Empty -> playerNewDirection
-  Wall -> player
+  Wall -> playerWithUpdatedIntendedDirection
   where
+    playerWithUpdatedIntendedDirection = player { intendedDirection = direction' }
+    playerNewDirection = direct playerWithUpdatedIntendedDirection direction' 
     nextTile = getTileFromGrid grid (getNextPositionFromPlayer playerNewDirection)
-    playerNewDirection = direct player direction' 
 
 move :: Player -> Direction -> Player
 move player@PacMan{posPlayer = (Position x y)} North = player { posPlayer = Position x (y-1) } 
@@ -66,19 +67,35 @@ move player@PacMan{posPlayer = (Position x y)} South = player { posPlayer = Posi
 move player@PacMan{posPlayer = (Position x y)} West = player { posPlayer = Position (x - 1) y } 
 
 tryMove :: Player -> Grid -> Player
-tryMove player grid = case nextTile of
-  PacDot -> move player (direction player)
-  Empty -> move player (direction player)
-  Wall -> player
+tryMove player grid = 
+  {-
+    the intended direction of the player is checked, 
+    since the intended direction was different than what the player is currently moving to,
+    if it is possible to move there,
+    update the direction of the player
+  -}
+  case nextTileIntendedDirection of
+    PacDot -> move (direct player playerIntendedDirection) playerIntendedDirection
+    Empty  -> move (direct player playerIntendedDirection) playerIntendedDirection
+    _      -> case nextTile of
+        PacDot  -> move player (direction player)
+        Empty   -> move player (direction player)
+        _       -> player
   where 
+    playerDirection = direction player
+    playerIntendedDirection = intendedDirection player
     nextTile = getTileFromGrid grid (getNextPositionFromPlayer player)
+    nextTileIntendedDirection = getTileFromGrid grid (getNextPositionFromPlayer (direct player playerIntendedDirection))
+
+getNextPositionFromPlayerByIntention :: Player -> Grid -> Position
+getNextPositionFromPlayerByIntention player grid = posPlayer (tryMove player grid)
 
 gridByNextMove :: Grid -> Player -> Grid
 gridByNextMove grid player = case nextTile of
   PacDot -> updateTileOfGrid grid nextPosition Empty
   _ -> grid
   where
-    nextPosition = getNextPositionFromPlayer player
+    nextPosition = getNextPositionFromPlayerByIntention player grid
     nextTile = getTileFromGrid grid nextPosition
 
   
