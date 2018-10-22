@@ -39,7 +39,7 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
 viewPure :: GameState -> Picture
 viewPure gstate = pictures [
   viewTiles ((tiles . grid) gstate), 
-  viewPlayer (player gstate) (tryMove (player gstate) (grid gstate)) (elapsedTime gstate), 
+  viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
   viewEnemies (enemies gstate)
   ]
 

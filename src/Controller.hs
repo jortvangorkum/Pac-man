@@ -15,8 +15,9 @@ step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
-      player = playerAfterUpdate, 
-      grid = gridAfterUpdate (grid gstate) playerAfterUpdate,
+      player = nextPlayer gstate, 
+      nextPlayer = playerAfterUpdate, 
+      grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
       elapsedTime = 0 
     }
   -- Just update the elapsed time
@@ -25,7 +26,7 @@ step secs gstate
       elapsedTime = elapsedTime gstate + secs 
     }
   where
-    playerAfterUpdate = tryMove (player gstate) (grid gstate)
+    playerAfterUpdate = tryMove (nextPlayer gstate) (grid gstate)
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -33,16 +34,16 @@ input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate = case c of
-  'w' -> gstate { player = tryDirect (player gstate) North (grid gstate) }
-  's' -> gstate { player = tryDirect (player gstate) South (grid gstate) }
-  'a' -> gstate { player = tryDirect (player gstate) West (grid gstate) }
-  'd' -> gstate { player = tryDirect (player gstate) East (grid gstate) }
+  'w' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
+  's' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
+  'a' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
+  'd' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) East (grid gstate) }
 
 inputKey (EventKey (SpecialKey s) Down _ _) gstate = case s of
-  KeyUp    -> gstate { player = tryDirect (player gstate) North (grid gstate) }
-  KeyDown  -> gstate { player = tryDirect (player gstate) South (grid gstate) }
-  KeyLeft  -> gstate { player = tryDirect (player gstate) West (grid gstate) }
-  KeyRight -> gstate { player = tryDirect (player gstate) East (grid gstate) }
+  KeyUp    -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
+  KeyDown  -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
+  KeyLeft  -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
+  KeyRight -> gstate { nextPlayer = tryDirect (nextPlayer gstate) East (grid gstate) }
 
 inputKey _ gstate = gstate
 
@@ -50,13 +51,7 @@ direct :: Player -> Direction -> Player
 direct player direction' = player { direction = direction' }
 
 tryDirect :: Player -> Direction -> Grid -> Player
-tryDirect player direction' grid = case nextTile of
-  Wall     -> playerWithUpdatedIntendedDirection
-  _        -> playerNewDirection
-  where
-    playerWithUpdatedIntendedDirection = player { intendedDirection = direction' }
-    playerNewDirection = direct playerWithUpdatedIntendedDirection direction' 
-    nextTile = getTileFromGrid grid (getNextPositionFromPlayer playerNewDirection)
+tryDirect player direction' grid = player { intendedDirection = direction' }
 
 move :: Player -> Direction -> Player
 move player@PacMan{posPlayer = (Position x y)} North = player { posPlayer = Position x (y-1) } 
