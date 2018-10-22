@@ -105,9 +105,9 @@ viewEnemy enemy = translateToGrid x y $ pictures [
     (Position x y) = posEnemy enemy
     size = fromIntegral tileSize / 2
     ghostColor = case enemy of
-      (Blinky _) -> color red
-      (Pinky _) -> color white
-      (Inky _) -> color blue
-      (Clyde _) -> color orange
+      (Blinky _) -> color (makeColor (255/255) 0 0 1)
+      (Pinky _) -> color (makeColor (255/255) (177/255) (255/255) 1)
+      (Inky _) -> color (makeColor 0 (255/255) (255/255) 1)
+      (Clyde _) -> color (makeColor (255/255) (182/255) (50/255) 1)
     -- later do this based on direction
     eyeDirectionTranslation = translate (size/5) 0 
