@@ -110,7 +110,7 @@ data GhostMode = Chase | Scatter | Frightened
   Name
 -}
 -- Position x y
-data Position = Position Int Int deriving (Show, Eq)
+data Position = Position { x :: Int, y :: Int } deriving (Show, Eq)
 data Direction = North | East | South | West deriving (Show, Eq)  
 data Tile = Empty | Wall | PacDot | PacFruit deriving (Show, Eq)  
 data Grid = Grid { width :: Int,  height :: Int, tiles :: Seq (Tile, Int, Int) }
