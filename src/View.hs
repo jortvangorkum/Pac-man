@@ -4,6 +4,7 @@ module View where
 
 import Graphics.Gloss
 import Model
+import Controller
 import Data.Foldable (toList)
 import Data.Sequence hiding (zip3, replicate, Empty)
 
@@ -36,19 +37,27 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
 
 
 viewPure :: GameState -> Picture
-viewPure gstate = pictures [viewTiles ((tiles . grid) gstate), viewPlayer (player gstate), viewEnemies (enemies gstate)]
+viewPure gstate = pictures [viewTiles ((tiles . grid) gstate), viewPlayer (player gstate) (grid gstate) (elapsedTime gstate), viewEnemies (enemies gstate)]
 
 viewTiles :: Seq (Tile, Int, Int) -> Picture
 viewTiles tiles = pictures $ map tileToPicture (toList tiles)
 
-viewPlayer :: Player -> Picture
-viewPlayer player = case player of
-  PacMan {}  -> viewPacMan player
+viewPlayer :: Player -> Grid -> Float -> Picture
+viewPlayer player grid time = case player of
+  PacMan {}  -> viewPacMan player grid time
 
-viewPacMan :: Player -> Picture
-viewPacMan (PacMan _ position@(Position x y) _ _) = translateToGrid x y $ color yellow $ circleSolid size
+viewPacMan :: Player -> Grid -> Float -> Picture
+viewPacMan p@(PacMan _ position@(Position x y) _ _) grid time = extraTranslation (direction nextPlayerIteration) $ translateToGrid x y $ color yellow $ circleSolid size
   where
     size = fromIntegral tileSize / 2
+    nextPlayerIteration = tryMove p grid
+    -- nextPlayerIterationDirection :: Direction
+    -- nextPlayerIterationDirection = direction nextPlayerIteration
+    extraTranslationAmount = (time / secondsBetweenCycles) * fromIntegral tileSize
+    extraTranslation North = translate 0 extraTranslationAmount
+    extraTranslation East = translate extraTranslationAmount 0
+    extraTranslation South = translate 0 (-extraTranslationAmount)
+    extraTranslation West = translate (-extraTranslationAmount) 0
 
 
 viewEnemies :: [Enemy] -> Picture
