@@ -33,13 +33,14 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
     o = case tile of
       PacDot    -> circleSolid (t / 8)
       PacFruit  -> circleSolid (t / 3)
+      Empty     -> blank
       _         -> rectangleSolid t t
 
 
 viewPure :: GameState -> Picture
 viewPure gstate = pictures [
-  viewTiles ((tiles . grid) gstate), 
   viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
+  viewTiles ((tiles . grid) gstate), 
   viewEnemies (enemies gstate)
   ]
 
@@ -58,8 +59,17 @@ viewPlayer player playerNext time = case player of
   PacMan {}  -> viewPacMan player playerNext time
 
 viewPacMan :: Player -> Player -> Float -> Picture
-viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ color yellow $ circleSolid size
+viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ rotation $ pictures [
+  color yellow $ circleSolid size, 
+  color black $ arcSolid (20 + (amount * 70)) (160 - (amount * 70)) (size + 1)
+  ]
   where
+    amount = abs (((time / secondsBetweenCycles) - 0.5) * 2)
+    rotation = case direction pNext of
+      North -> rotate 0
+      East  -> rotate 90
+      South -> rotate 180
+      West  -> rotate 270
     x1 = (x . posPlayer) p
     x2 = (x . posPlayer) pNext
     y1 = (y . posPlayer) p

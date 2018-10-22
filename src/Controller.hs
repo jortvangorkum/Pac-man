@@ -18,12 +18,12 @@ step secs gstate
       player = nextPlayer gstate, 
       nextPlayer = playerAfterUpdate, 
       grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
-      elapsedTime = 0 
+      elapsedTime = 0
     }
   -- Just update the elapsed time
   | otherwise = 
     return $ gstate { 
-      elapsedTime = elapsedTime gstate + secs 
+      elapsedTime = elapsedTime gstate + secs
     }
   where
     playerAfterUpdate = tryMove (nextPlayer gstate) (grid gstate)
