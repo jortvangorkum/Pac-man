@@ -3,21 +3,13 @@ module Main where
 import Controller
 import Model
 import View
+import Settings
 
 -- Graphics Library: IO Version of Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-{-
-  Settings for Display
--}
 window :: Display
 window = InWindow "Pac-Man" (windowSizeFromGrid initialGameGrid) (0, 0)
-
-background :: Color
-background = black
-
-frames :: Int
-frames = 60
 
 {-
   Main function

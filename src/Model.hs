@@ -3,6 +3,7 @@
 
 module Model where
 
+import Settings
 import Prelude hiding (lookup, zip3)
 import Data.List hiding (lookup)
 import Data.Sequence hiding (zip3, replicate, Empty)
@@ -68,9 +69,6 @@ initialState = GameState
   (PacMan 3 (Position 2 1) East East)  -- pacman
   [Blinky (Position 12 13), Pinky (Position 13 13), Inky (Position 14 13), Clyde (Position 15 13)]
 
-secondsBetweenCycles :: Float
-secondsBetweenCycles = 1 / 4
-
 {-
   Game state models
 -}
@@ -122,9 +120,6 @@ indexFromPosition (Position x y) = x + gameGridWidth * y
 
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
 halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
-
-tileSize :: Int
-tileSize = 30
 
 windowSizeFromGrid :: Grid -> (Int, Int)
 windowSizeFromGrid (Grid w h _) = (w * tileSize, h * tileSize) 

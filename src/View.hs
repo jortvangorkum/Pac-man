@@ -5,6 +5,7 @@ module View where
 import Graphics.Gloss
 import Model
 import Controller
+import Settings
 import Data.Foldable (toList)
 import Data.Sequence hiding (zip3, replicate, Empty)
 
