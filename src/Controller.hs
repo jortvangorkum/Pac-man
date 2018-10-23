@@ -76,7 +76,7 @@ tryMove player grid =
     nextTile = getNextTileFromPlayer player grid
     nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
-        Wall     -> player
+        (Wall _)     -> player
         _        -> move player (dirPlayer player)
 
 gridAfterUpdate :: Grid -> Player -> Grid
