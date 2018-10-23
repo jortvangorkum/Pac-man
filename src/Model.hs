@@ -133,8 +133,7 @@ parseGrid tiles width height = fromList (zip3 tiles columnIndexArray rowIndexArr
 getTileFromGrid :: Grid -> Position -> Tile
 getTileFromGrid (Grid _ _ tiles) position = case lookup (indexFromPosition position) tiles of
   Just (tile, _, _) -> tile
-  -- maybe return something else here, since apperently, there is not tile at the given position
-  _                 -> Wall
+  _                 -> Error "Position is outside of the Grid"
 
 getTileFromTuple :: (Tile, Int, Int) -> Tile
 getTileFromTuple (tile, _, _) = tile
