@@ -48,7 +48,7 @@ inputKey (EventKey (SpecialKey s) Down _ _) gstate = case s of
 inputKey _ gstate = gstate
 
 direct :: Player -> Direction -> Player
-direct player direction' = player { direction = direction' }
+direct player direction' = player { dirPlayer = direction' }
 
 tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = player { intendedDirection = direction' }
@@ -71,13 +71,13 @@ tryMove player grid =
     (Wall _)   -> checkNextTile
     _          -> move (direct player playerIntendedDirection) playerIntendedDirection
   where 
-    playerDirection = direction player
+    playerDirection = dirPlayer player
     playerIntendedDirection = intendedDirection player
     nextTile = getNextTileFromPlayer player grid
     nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
-        (Wall _) -> player
-        _        -> move player (direction player)
+        Wall     -> player
+        _        -> move player (dirPlayer player)
 
 gridAfterUpdate :: Grid -> Player -> Grid
 gridAfterUpdate grid playerAfterUpdate = case tile of

@@ -66,7 +66,7 @@ viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ 
   ]
   where
     amount = abs (((time / secondsBetweenCycles) - 0.5) * 2)
-    rotation = case direction pNext of
+    rotation = case dirPlayer pNext of
       North -> rotate 0
       East  -> rotate 90
       South -> rotate 180

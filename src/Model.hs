@@ -94,7 +94,7 @@ data PlayState = Playing | Paused | Finished
 {-
   Name
 -}
-data Player = PacMan { lives :: Int, posPlayer :: Position, direction :: Direction, intendedDirection :: Direction }
+data Player = PacMan { lives :: Int, posPlayer :: Position, dirPlayer :: Direction, intendedDirection :: Direction }
 data Enemy = 
   Blinky { posEnemy :: Position } 
   | Pinky { posEnemy :: Position } 
@@ -144,10 +144,10 @@ getNextTileFromPlayer :: Player -> Grid -> Tile
 getNextTileFromPlayer player grid = getTileFromGrid grid (getNextPositionFromPlayer player)
 
 getNextPositionFromPlayer :: Player -> Position
-getNextPositionFromPlayer player@PacMan{direction = North, posPlayer = (Position x y)} = Position x (y-1)
-getNextPositionFromPlayer player@PacMan{direction = East, posPlayer = (Position x y)}  = Position (x+1) y
-getNextPositionFromPlayer player@PacMan{direction = South, posPlayer = (Position x y)} = Position x (y+1)
-getNextPositionFromPlayer player@PacMan{direction = West, posPlayer = (Position x y)}  = Position (x-1) y
+getNextPositionFromPlayer player@PacMan{dirPlayer = North, posPlayer = (Position x y)} = Position x (y-1)
+getNextPositionFromPlayer player@PacMan{dirPlayer = East, posPlayer = (Position x y)}  = Position (x+1) y
+getNextPositionFromPlayer player@PacMan{dirPlayer = South, posPlayer = (Position x y)} = Position x (y+1)
+getNextPositionFromPlayer player@PacMan{dirPlayer = West, posPlayer = (Position x y)}  = Position (x-1) y
 
 updateTileOfGrid :: Grid -> Position -> Tile -> Grid
 updateTileOfGrid grid position@(Position x y) tile = grid { tiles = update (indexFromPosition position) (tile, x, y) (tiles grid) }
