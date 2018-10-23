@@ -8,6 +8,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Data.Char
+import Data.Maybe
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -51,7 +52,7 @@ direct :: Player -> Direction -> Player
 direct player direction' = player { dirPlayer = direction' }
 
 tryDirect :: Player -> Direction -> Grid -> Player
-tryDirect player direction' grid = player { intendedDirection = direction' }
+tryDirect player direction' grid = player { intendedDirPlayer  = direction' }
 
 move :: Player -> Direction -> Player
 move player@PacMan{posPlayer = (Position x y)} North = player { posPlayer = Position x (y-1) } 
@@ -72,7 +73,7 @@ tryMove player grid =
     _          -> move (direct player playerIntendedDirection) playerIntendedDirection
   where 
     playerDirection = dirPlayer player
-    playerIntendedDirection = intendedDirection player
+    playerIntendedDirection = intendedDirPlayer  player
     nextTile = getNextTileFromPlayer player grid
     nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
@@ -88,4 +89,29 @@ gridAfterUpdate grid playerAfterUpdate = case tile of
     positionAfterUpdate = posPlayer playerAfterUpdate
     tile = getTileFromGrid grid positionAfterUpdate
 
-  
+{-
+  Ghosts
+-}
+
+chooseRandomDirection :: [Direction] -> IO Direction
+chooseRandomDirection dirs = pick dirs
+  where
+    pick :: [a] -> IO a
+    pick xs = fmap (xs !!) $ randomRIO (0, length xs - 1)
+
+getDirections :: Grid -> Position -> [Direction]
+getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (east, East), (south, South), (west, West)]
+  where
+    north = getTileFromGrid grid (Position x (y-1))
+    east = getTileFromGrid grid (Position (x+1) y) 
+    south = getTileFromGrid grid (Position x (y+1))
+    west = getTileFromGrid grid (Position (x-1) y) 
+    tileToDirection :: (Tile, Direction) -> Maybe Direction
+    tileToDirection (tile, dir) = case tile of 
+      (Wall _) -> Nothing
+      _        -> Just dir
+
+updateEnemy :: Enemy -> [Direction] -> IO Enemy
+updateEnemy enemy dirs = do 
+  dir <- chooseRandomDirection dirs 
+  return $ enemy{dirEnemy = dir}

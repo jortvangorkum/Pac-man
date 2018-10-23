@@ -101,14 +101,12 @@ viewEnemies enemies = pictures $ map viewEnemy enemies
 
 viewEnemy :: Enemy -> Picture
 viewEnemy enemy = translateToGrid x y $ pictures [
-  
     -- body 
     ghostColor $ arcSolid 0 180 size,
     translate 0 (-size/3) $ ghostColor $ rectangleSolid (fromIntegral tileSize) size,
     translate 0 (-size/1.5) $ rotate 180 $ ghostColor $ arcSolid 180 0 (size/3),
     translate (size/1.5) (-size/1.5) $ rotate 180 $ ghostColor $ arcSolid 180 0 (size/3),
     translate (-size/1.5) (-size/1.5) $ rotate 180 $ ghostColor $ arcSolid 180 0 (size/3),
-  
     -- eyes
     pictures [
       -- white
@@ -123,9 +121,9 @@ viewEnemy enemy = translateToGrid x y $ pictures [
     (Position x y) = posEnemy enemy
     size = fromIntegral tileSize / 2
     ghostColor = case enemy of
-      (Blinky _) -> color (makeColor (255/255) 0 0 1)
-      (Pinky _) -> color (makeColor (255/255) (177/255) (255/255) 1)
-      (Inky _) -> color (makeColor 0 (255/255) (255/255) 1)
-      (Clyde _) -> color (makeColor (255/255) (182/255) (50/255) 1)
+      (Blinky _ _) -> color (makeColor (255/255) 0 0 1)
+      (Pinky _ _) -> color (makeColor (255/255) (177/255) (255/255) 1)
+      (Inky _ _) -> color (makeColor 0 (255/255) (255/255) 1)
+      (Clyde _ _) -> color (makeColor (255/255) (182/255) (50/255) 1)
     -- later do this based on direction
     eyeDirectionTranslation = translate (size/5) 0 

@@ -82,7 +82,7 @@ initialState = GameState
   initialGameGrid                      -- grid
   (PacMan 3 (Position 1 1) East East)  -- pacman
   (PacMan 3 (Position 2 1) East East)  -- pacman
-  [Blinky (Position 12 13), Pinky (Position 13 13), Inky (Position 14 13), Clyde (Position 15 13)]
+  [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
 
 {-
   Game state models
@@ -109,12 +109,12 @@ data PlayState = Playing | Paused | Finished
 {-
   Name
 -}
-data Player = PacMan { lives :: Int, posPlayer :: Position, dirPlayer :: Direction, intendedDirection :: Direction }
+data Player = PacMan { lives :: Int, posPlayer :: Position, dirPlayer :: Direction, intendedDirPlayer  :: Direction }
 data Enemy = 
-  Blinky { posEnemy :: Position } 
-  | Pinky { posEnemy :: Position } 
-  | Inky { posEnemy :: Position } 
-  | Clyde { posEnemy :: Position } 
+  Blinky { posEnemy :: Position, dirEnemy :: Direction } 
+  | Pinky { posEnemy :: Position, dirEnemy :: Direction } 
+  | Inky { posEnemy :: Position, dirEnemy :: Direction } 
+  | Clyde { posEnemy :: Position, dirEnemy :: Direction } 
 
 {-
   Name
