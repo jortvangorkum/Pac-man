@@ -27,7 +27,7 @@ tileToPicture (tile, x, y) = translateToGrid x y $ c o
   where
     t = fromIntegral tileSize
     c = case tile of
-      Wall      -> color red
+      (Wall _)  -> color red
       Empty     -> color black
       PacDot    -> color white
       PacFruit  -> color white

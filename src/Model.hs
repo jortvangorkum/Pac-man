@@ -46,7 +46,7 @@ initialGameTiles = [
   w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w, w
   ]
   where 
-    w = Wall
+    w = Wall Full
     d = PacDot
     f = PacFruit
     e = Empty
@@ -109,11 +109,13 @@ data GhostMode = Chase | Scatter | Frightened
 {-
   Name
 -}
--- Position x y
 data Position = Position { x :: Int, y :: Int } deriving (Show, Eq)
 data Direction = North | East | South | West deriving (Show, Eq)  
-data Tile = Empty | Wall | PacDot | PacFruit deriving (Show, Eq)  
 data Grid = Grid { width :: Int,  height :: Int, tiles :: Seq (Tile, Int, Int) }
+
+data Tile = Empty | Wall WallType | PacDot | PacFruit deriving (Show, Eq)  
+data WallType = Full | Top | Right | Bottom | Left | CornerFromBottomToRightOutside | CornerFromLeftToBottomOutside | CornerFromTopToLeftOutside | CornerFromRightToTopOutside deriving (Show, Eq)  
+
 
 indexFromPosition :: Position -> Int
 indexFromPosition (Position x y) = x + gameGridWidth * y
@@ -133,7 +135,7 @@ parseGrid tiles width height = fromList (zip3 tiles columnIndexArray rowIndexArr
 getTileFromGrid :: Grid -> Position -> Tile
 getTileFromGrid (Grid _ _ tiles) position = case lookup (indexFromPosition position) tiles of
   Just (tile, _, _) -> tile
-  _                 -> Error "Position is outside of the Grid"
+  _                 -> error "Position is outside of the Grid"
 
 getTileFromTuple :: (Tile, Int, Int) -> Tile
 getTileFromTuple (tile, _, _) = tile
