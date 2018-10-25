@@ -120,8 +120,9 @@ updateEnemies enemies = map updateEnemy enemies
 updateEnemy :: (Enemy, Direction) -> Enemy
 updateEnemy (enemy, rdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
 
--- error: index i too large
 pickElement :: [a] -> IO a
+pickElement [] = error "pickElement: expects a non-empty list"
+pickElement [x] = return x
 pickElement list = do
     i <- randomRIO (0, length list - 1)
     return $ list !! i
