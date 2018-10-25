@@ -14,18 +14,19 @@ import Data.Maybe
 step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
-  | elapsedTime gstate + secs > secondsBetweenCycles =
-    return $ gstate {
-      -- grid
-      grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
-      -- movables
-      player = nextPlayer gstate, 
-      nextPlayer = updatePlayer (nextPlayer gstate) (grid gstate), 
-      enemies = nextEnemies gstate,
-      nextEnemies = updateEnemies (nextEnemies gstate) (grid gstate),
-      -- time
-      elapsedTime = 0
-    }
+  | elapsedTime gstate + secs > secondsBetweenCycles = do 
+      rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
+      return $ gstate {
+        -- grid
+        grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
+        -- movables
+        player = nextPlayer gstate, 
+        nextPlayer = updatePlayer (nextPlayer gstate) (grid gstate), 
+        enemies = nextEnemies gstate,
+        nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
+        -- time
+        elapsedTime = 0
+      }
   -- Just update the elapsed time
   | otherwise = 
     return $ gstate { 
@@ -98,12 +99,6 @@ gridAfterUpdate grid updatePlayer = case tile of
 {-
   Ghosts
 -}
-chooseRandomDirection :: [Direction] -> IO Direction
-chooseRandomDirection dirs = pick dirs
-  where
-    pick :: [a] -> IO a
-    pick xs = fmap (xs !!) $ randomRIO (0, length xs - 1)
-
 getDirections :: Grid -> Position -> [Direction]
 getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (east, East), (south, South), (west, West)]
   where
@@ -116,16 +111,22 @@ getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (e
       (Wall _) -> Nothing
       _        -> Just dir
 
-moveEnemy :: Enemy -> Direction -> Enemy
-moveEnemy enemy dir = enemy {posEnemy = move pos dir} 
-    where
-      pos = posEnemy enemy
+randomDirection :: Enemy -> Grid -> IO Direction
+randomDirection enemy grid = pickElement (filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid (posEnemy enemy)))
 
-updateEnemies :: [Enemy] -> Grid -> [Enemy]
-updateEnemies enemies grid = map (`updateEnemy` grid) enemies
+updateEnemies :: [(Enemy, Direction)]-> [Enemy]
+updateEnemies enemies = map updateEnemy enemies
 
-updateEnemy :: Enemy -> Grid -> Enemy
-updateEnemy enemy grid = enemy { posEnemy = move pos dir, dirEnemy = dir }
-  where
-    (dir : _) = getDirections grid (posEnemy enemy)
-    pos = posEnemy enemy
+updateEnemy :: (Enemy, Direction) -> Enemy
+updateEnemy (enemy, rdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
+
+pickElement :: [a] -> IO a
+pickElement list = do
+    i <- randomRIO (0, length list - 1)
+    return $ list !! i
+
+oppositeDirection :: Direction -> Direction
+oppositeDirection North = South
+oppositeDirection East = West
+oppositeDirection South = North
+oppositeDirection West = East

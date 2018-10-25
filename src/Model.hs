@@ -84,6 +84,8 @@ initialState = GameState
   (PacMan 3 (Position 2 1) East East)  -- pacman
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
+  where
+    dirs = [North, South, West, East]
 
 {-
   Game state models
