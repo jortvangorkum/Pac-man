@@ -19,6 +19,7 @@ step secs gstate
       player = nextPlayer gstate, 
       nextPlayer = playerAfterUpdate, 
       grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
+      enemies = updateEnemies (enemies gstate) (grid gstate),
       elapsedTime = 0
     }
   -- Just update the elapsed time
@@ -54,11 +55,14 @@ direct player direction' = player { dirPlayer = direction' }
 tryDirect :: Player -> Direction -> Grid -> Player
 tryDirect player direction' grid = player { intendedDirPlayer  = direction' }
 
-move :: Player -> Direction -> Player
-move player@PacMan{posPlayer = (Position x y)} North = player { posPlayer = Position x (y-1) } 
-move player@PacMan{posPlayer = (Position x y)} East = player { posPlayer = Position (x + 1) y } 
-move player@PacMan{posPlayer = (Position x y)} South = player { posPlayer = Position x (y+1) } 
-move player@PacMan{posPlayer = (Position x y)} West = player { posPlayer = Position (x - 1) y } 
+movePlayer :: Player -> Direction -> Player
+movePlayer player@PacMan{posPlayer = pos} dir = player { posPlayer = move pos dir} 
+
+move :: Position -> Direction -> Position
+move (Position x y) North = Position x (y-1)
+move (Position x y) East = Position (x + 1) y
+move (Position x y) South = Position x (y+1)
+move (Position x y) West = Position (x - 1) y
 
 tryMove :: Player -> Grid -> Player
 tryMove player grid = 
@@ -70,7 +74,7 @@ tryMove player grid =
   -}
   case nextTileIntendedDirection of
     (Wall _)   -> checkNextTile
-    _          -> move (direct player playerIntendedDirection) playerIntendedDirection
+    _          -> movePlayer (direct player playerIntendedDirection) playerIntendedDirection
   where 
     playerDirection = dirPlayer player
     playerIntendedDirection = intendedDirPlayer  player
@@ -78,7 +82,7 @@ tryMove player grid =
     nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
         (Wall _)     -> player
-        _        -> move player (dirPlayer player)
+        _        -> movePlayer player (dirPlayer player)
 
 gridAfterUpdate :: Grid -> Player -> Grid
 gridAfterUpdate grid playerAfterUpdate = case tile of
@@ -92,7 +96,6 @@ gridAfterUpdate grid playerAfterUpdate = case tile of
 {-
   Ghosts
 -}
-
 chooseRandomDirection :: [Direction] -> IO Direction
 chooseRandomDirection dirs = pick dirs
   where
@@ -111,7 +114,16 @@ getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (e
       (Wall _) -> Nothing
       _        -> Just dir
 
-updateEnemy :: Enemy -> [Direction] -> IO Enemy
-updateEnemy enemy dirs = do 
-  dir <- chooseRandomDirection dirs 
-  return $ enemy{dirEnemy = dir}
+moveEnemy :: Enemy -> Direction -> Enemy
+moveEnemy enemy dir = enemy {posEnemy = move pos dir} 
+    where
+      pos = posEnemy enemy
+
+updateEnemies :: [Enemy] -> Grid -> [Enemy]
+updateEnemies enemies grid = map (`updateEnemy` grid) enemies
+
+updateEnemy :: Enemy -> Grid -> Enemy
+updateEnemy enemy grid = enemy { posEnemy = move pos dir, dirEnemy = dir }
+  where
+    (dir : _) = getDirections grid (posEnemy enemy)
+    pos = posEnemy enemy
