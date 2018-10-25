@@ -128,7 +128,11 @@ viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGri
       (Inky _ _) -> color (makeColor 0 (255/255) (255/255) 1)
       (Clyde _ _) -> color (makeColor (255/255) (182/255) (50/255) 1)
     -- later do this based on direction
-    eyeDirectionTranslation = translate (size/5) 0 
+    eyeDirectionTranslation = case dirEnemy enemyNext of 
+      North -> translate 0 (size/5) 
+      East -> translate (size/5) 0 
+      South -> translate 0 (-size/5)
+      West -> translate (-size/5) 0 
     x1 = (x . posEnemy) enemy
     x2 = (x . posEnemy) enemyNext
     y1 = (y . posEnemy) enemy

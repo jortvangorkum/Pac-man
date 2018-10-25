@@ -120,6 +120,7 @@ updateEnemies enemies = map updateEnemy enemies
 updateEnemy :: (Enemy, Direction) -> Enemy
 updateEnemy (enemy, rdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
 
+-- error: index i too large
 pickElement :: [a] -> IO a
 pickElement list = do
     i <- randomRIO (0, length list - 1)
