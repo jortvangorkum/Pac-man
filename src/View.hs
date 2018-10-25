@@ -8,7 +8,7 @@ import Controller
 import Settings
 import Prelude hiding (Right, Left)
 import Data.Foldable (toList)
-import Data.Sequence hiding (zip3, replicate, Empty)
+import Data.Sequence hiding (zip3, replicate, Empty, zip)
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
@@ -59,8 +59,10 @@ viewPure :: GameState -> Picture
 viewPure gstate = pictures [
   viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
   viewTiles ((tiles . grid) gstate), 
-  viewEnemies (enemies gstate)
+  viewEnemies zippedEnemies (elapsedTime gstate)
   ]
+  where
+    zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
 
 extraTranslation :: Int -> Int -> Float -> (Picture -> Picture)
 extraTranslation dx dy time = translate dx' dy'
@@ -96,11 +98,11 @@ viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ 
     dy = -(y2 - y1)
     size = fromIntegral tileSize / 2
 
-viewEnemies :: [Enemy] -> Picture
-viewEnemies enemies = pictures $ map viewEnemy enemies
+viewEnemies :: [(Enemy, Enemy)] -> Float -> Picture
+viewEnemies enemies time  = pictures $ map (`viewEnemy` time) enemies
 
-viewEnemy :: Enemy -> Picture
-viewEnemy enemy = translateToGrid x y $ pictures [
+viewEnemy :: (Enemy, Enemy) -> Float -> Picture
+viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGrid x' y' $ pictures [
     -- body 
     ghostColor $ arcSolid 0 180 size,
     translate 0 (-size/3) $ ghostColor $ rectangleSolid (fromIntegral tileSize) size,
@@ -118,7 +120,7 @@ viewEnemy enemy = translateToGrid x y $ pictures [
     ]
   ]
   where
-    (Position x y) = posEnemy enemy
+    (Position x' y') = posEnemy enemy
     size = fromIntegral tileSize / 2
     ghostColor = case enemy of
       (Blinky _ _) -> color (makeColor (255/255) 0 0 1)
@@ -127,3 +129,9 @@ viewEnemy enemy = translateToGrid x y $ pictures [
       (Clyde _ _) -> color (makeColor (255/255) (182/255) (50/255) 1)
     -- later do this based on direction
     eyeDirectionTranslation = translate (size/5) 0 
+    x1 = (x . posEnemy) enemy
+    x2 = (x . posEnemy) enemyNext
+    y1 = (y . posEnemy) enemy
+    y2 = (y . posEnemy) enemyNext
+    dx =  x2 - x1
+    dy = -(y2 - y1)

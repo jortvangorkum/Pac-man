@@ -16,10 +16,14 @@ step secs gstate
   -- Game Iteration
   | elapsedTime gstate + secs > secondsBetweenCycles =
     return $ gstate {
-      player = nextPlayer gstate, 
-      nextPlayer = playerAfterUpdate, 
+      -- grid
       grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
-      enemies = updateEnemies (enemies gstate) (grid gstate),
+      -- movables
+      player = nextPlayer gstate, 
+      nextPlayer = updatePlayer (nextPlayer gstate) (grid gstate), 
+      enemies = nextEnemies gstate,
+      nextEnemies = updateEnemies (nextEnemies gstate) (grid gstate),
+      -- time
       elapsedTime = 0
     }
   -- Just update the elapsed time
@@ -27,8 +31,6 @@ step secs gstate
     return $ gstate { 
       elapsedTime = elapsedTime gstate + secs
     }
-  where
-    playerAfterUpdate = tryMove (nextPlayer gstate) (grid gstate)
 
 -- | Handle user input
 input :: Event -> GameState -> IO GameState
@@ -64,8 +66,8 @@ move (Position x y) East = Position (x + 1) y
 move (Position x y) South = Position x (y+1)
 move (Position x y) West = Position (x - 1) y
 
-tryMove :: Player -> Grid -> Player
-tryMove player grid = 
+updatePlayer :: Player -> Grid -> Player
+updatePlayer player grid = 
   {-
     the intended direction of the player is checked, 
     since the intended direction was different than what the player is currently moving to,
@@ -85,12 +87,12 @@ tryMove player grid =
         _        -> movePlayer player (dirPlayer player)
 
 gridAfterUpdate :: Grid -> Player -> Grid
-gridAfterUpdate grid playerAfterUpdate = case tile of
+gridAfterUpdate grid updatePlayer = case tile of
   PacDot   -> updateTileOfGrid grid positionAfterUpdate Empty
   PacFruit -> updateTileOfGrid grid positionAfterUpdate Empty
   _        -> grid
   where
-    positionAfterUpdate = posPlayer playerAfterUpdate
+    positionAfterUpdate = posPlayer updatePlayer
     tile = getTileFromGrid grid positionAfterUpdate
 
 {-
