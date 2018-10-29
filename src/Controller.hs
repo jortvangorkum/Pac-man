@@ -205,21 +205,21 @@ getBestDirection dirs@(dir:_) current target
     y2 = y target
     checkDirection :: [Direction] -> Direction -> Maybe Direction
     checkDirection dirs dir
-      | elem dir dirs = Just dir
+      | dir `elem` dirs = Just dir
       | otherwise     = Nothing
     checkLeftRight :: Bool -> Direction
-    checkLeftRight checkOtherDirection = case x2 - x1 < 0 of
-      True -> case checkDirection dirs West of 
+    checkLeftRight checkOtherDirection = if x2 - x1 < 0
+      then case checkDirection dirs West of 
         Just x -> x
         _ -> if checkOtherDirection then checkUpDown False else dir
-      False -> case checkDirection dirs East of 
+      else case checkDirection dirs East of 
         Just x -> x
         _ -> if checkOtherDirection then checkUpDown False else dir
     checkUpDown :: Bool -> Direction
-    checkUpDown checkOtherDirection = case y2 - y1 < 0 of
-      True -> case checkDirection dirs North of
+    checkUpDown checkOtherDirection = if y2 - y1 < 0
+      then case checkDirection dirs North of
         Just x -> x
         _ -> if checkOtherDirection then checkLeftRight False else dir
-      False -> case checkDirection dirs South of
+      else case checkDirection dirs South of
         Just x -> x
         _ -> if checkOtherDirection then checkLeftRight False else dir
