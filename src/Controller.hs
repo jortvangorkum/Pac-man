@@ -23,7 +23,7 @@ step secs gstate
 
   -- playing
   | elapsedTime gstate + secs > secondsBetweenCycles && playState gstate == Playing = do 
-      rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
+      rdirs <- return $ map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) (nextEnemies gstate) 
       return $ gstate {
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
@@ -181,3 +181,41 @@ updateScore score tile = case tile of
   PacDot   -> score + 10
   PacFruit -> score + 50
   _        -> score
+
+
+pathFinding :: Enemy -> Position -> Grid -> Direction
+pathFinding enemy target grid
+  | length possibleDirections > 1 = getBestDirection possibleDirections current target
+  | otherwise                     = dir
+  where
+    possibleDirections :: [Direction]
+    possibleDirections = filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid current)
+    (dir:_) =  possibleDirections
+    current = posEnemy enemy
+
+
+getBestDirection :: [Direction] -> Position -> Position -> Direction
+getBestDirection dirs@(dir:_) current target
+  | abs (y2 - y1) > abs (x2 - x1) = case y2 - y1 < 0 of
+    True -> case checkDirection dirs North of
+      Just x -> x
+      _ -> dir
+    False -> case checkDirection dirs South of
+      Just x -> x
+      _ -> dir
+  | otherwise                     = case x2 - x1 < 0 of
+    True -> case checkDirection dirs West of 
+      Just x -> x
+      _ -> dir
+    False -> case checkDirection dirs East of 
+      Just x -> x
+      _ -> dir
+  where
+    x1 = x current
+    x2 = x target
+    y1 = y current
+    y2 = y target
+    checkDirection :: [Direction] -> Direction -> Maybe Direction
+    checkDirection dirs dir
+      | elem dir dirs = Just dir
+      | otherwise     = Nothing
