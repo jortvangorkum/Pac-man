@@ -18,7 +18,8 @@ viewPure gstate = pictures [
   viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
   viewTiles ((tiles . grid) gstate), 
   viewEnemies zippedEnemies (elapsedTime gstate),
-  viewScore (score gstate)
+  viewScore (score gstate),
+  viewPlaystate (playState gstate)
   ]
   where
     zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
@@ -140,5 +141,16 @@ viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGri
     dx =  x2 - x1
     dy = -(y2 - y1)
 
+viewTopBar :: Picture -> Picture
+viewTopBar picture = translate 0 (fromIntegral spaceForSides / 1.25) $ translateToGrid 0 0 picture
+
 viewScore :: Int -> Picture
-viewScore score = translate 0 (fromIntegral spaceForSides / 1.5) $ translateToGrid 0 0 $ scale 0.5 0.5 $ color white $ text ("Score: " ++ show score)
+viewScore score = viewTopBar $ scale 0.25 0.25 $ color white $ text ("Score: " ++ show score)
+
+viewPlaystate :: PlayState -> Picture
+viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ scale 0.25 0.25 $ color white $ (text . show) playstate
+  where 
+    extraTranslationBasedOnText Playing = translate (-t * 2.25) 0
+    extraTranslationBasedOnText Paused = translate (-t * 2.25) 0
+    extraTranslationBasedOnText Finished = translate (-t * 2.5) 0
+    t = fromIntegral tileSize

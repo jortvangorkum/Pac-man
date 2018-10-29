@@ -14,7 +14,8 @@ import Data.Maybe
 step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
-  | elapsedTime gstate + secs > secondsBetweenCycles = do 
+  | playState gstate == Paused = return gstate
+  | elapsedTime gstate + secs > secondsBetweenCycles && playState gstate == Playing = do 
       rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
       return $ gstate {
         -- grid
@@ -40,6 +41,7 @@ input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate = case c of
+  'p' -> gstate { playState = togglePause (playState gstate) }
   'w' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
   's' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
   'a' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
@@ -67,6 +69,10 @@ move (Position x y) North = Position x (y-1)
 move (Position x y) East = Position (x + 1) y
 move (Position x y) South = Position x (y+1)
 move (Position x y) West = Position (x - 1) y
+
+togglePause :: PlayState -> PlayState
+togglePause Playing = Paused
+togglePause Paused = Playing
 
 updatePlayer :: Player -> Grid -> Player
 updatePlayer player grid = 
