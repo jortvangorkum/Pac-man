@@ -10,9 +10,11 @@ import Prelude hiding (Right, Left)
 import Data.Foldable (toList)
 import Data.Sequence hiding (zip3, replicate, Empty, zip)
 
+
+
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
-translateToGrid column row = translate width height . translate column' row' . translate (tileSize' / 2) (-tileSize' / 2)
+translateToGrid column row = translate 0 (-(fromIntegral topScoreBarSize/2)) . translate width height . translate column' row' . translate (tileSize' / 2) (-tileSize' / 2)
   where
     width = -(fromIntegral (gameGridWidth * tileSize) / 2)
     height = fromIntegral(gameGridHeight * tileSize) / 2

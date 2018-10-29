@@ -112,7 +112,10 @@ getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (e
       _        -> Just dir
 
 randomDirection :: Enemy -> Grid -> IO Direction
-randomDirection enemy grid = pickElement (filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid (posEnemy enemy)))
+randomDirection enemy grid = case dirs of
+    [] -> return (oppositeDirection (dirEnemy enemy))
+    _  -> pickElement dirs
+    where dirs = filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid (posEnemy enemy))
 
 updateEnemies :: [(Enemy, Direction)]-> [Enemy]
 updateEnemies enemies = map updateEnemy enemies

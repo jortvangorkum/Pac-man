@@ -13,3 +13,6 @@ secondsBetweenCycles = 1 / 4
 
 tileSize :: Int
 tileSize = 30
+
+topScoreBarSize :: Int
+topScoreBarSize = tileSize * 3
