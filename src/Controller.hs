@@ -14,15 +14,22 @@ import Data.Maybe
 step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
+
+  -- finished
+  | lives (player gstate) <= 0 = return $ gstate { playState = Finished }
+
+  -- paused
   | playState gstate == Paused = return gstate
+
+  -- playing
   | elapsedTime gstate + secs > secondsBetweenCycles && playState gstate == Playing = do 
       rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
       return $ gstate {
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
-        player = nextPlayer gstate, 
-        nextPlayer = updatePlayer (interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate)) (grid gstate), 
+        player = interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate) (updateEnemies (zip (nextEnemies gstate) rdirs)), 
+        nextPlayer = updatePlayer (interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate) (updateEnemies (zip (nextEnemies gstate) rdirs))) (grid gstate), 
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
@@ -74,16 +81,29 @@ move (Position x y) West = Position (x - 1) y
 togglePause :: PlayState -> PlayState
 togglePause Playing = Paused
 togglePause Paused = Playing
+togglePause Finished = Finished
 
-interactEnemiesWithPlayer :: Player -> [Enemy] -> Player
-interactEnemiesWithPlayer player enemies = updatePosition (player { lives = foldr checkPosition (lives player) enemies })
+-- also passes nextEnemies since otherwise the player and enemy can cross eachother without knowing
+interactEnemiesWithPlayer :: Player -> [Enemy] -> [Enemy] -> Player
+interactEnemiesWithPlayer player enemies nextEnemies = updatePosition p'
   where 
+    p' = p { lives = foldr checkPositionOfNextEnemy (lives p) nextEnemies }
+    p = player { lives = foldr checkPositionOfEnemy (lives player) enemies }
+
     updatePosition :: Player -> Player
     updatePosition updatedPlayer
       | lives player /= lives updatedPlayer = updatedPlayer { posPlayer = initialPlayerPosition, dirPlayer = East }
       | otherwise                           = updatedPlayer
-    checkPosition :: Enemy -> Int -> Int
-    checkPosition enemy lives
+
+    -- check if the position is opposite, since in that case you are sure they will collide if their position is also the same
+    checkPositionOfNextEnemy :: Enemy -> Int -> Int
+    checkPositionOfNextEnemy enemy lives 
+      | oppositeDirection (dirEnemy enemy) == dirPlayer player = checkPositionOfEnemy enemy lives
+      | otherwise                                              = lives
+      
+    -- check if the position is the same, since in that case you are sure they are collided
+    checkPositionOfEnemy :: Enemy -> Int -> Int
+    checkPositionOfEnemy enemy lives
       | posEnemy enemy == posPlayer player = lives - 1
       | otherwise                          = lives
 
