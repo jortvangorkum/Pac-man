@@ -74,6 +74,9 @@ gameGridHeight = 31
 initialGameGrid :: Grid
 initialGameGrid = Grid gameGridWidth gameGridHeight (parseGrid initialGameTiles gameGridWidth gameGridHeight)
 
+initialPlayerPosition :: Position
+initialPlayerPosition = Position 14 23
+
 initialState :: GameState
 initialState = GameState 
   0                                    -- elapsed time
@@ -81,8 +84,8 @@ initialState = GameState
   0                                    -- score
   Chase                                -- ghost mode
   initialGameGrid                      -- grid
-  (PacMan 3 (Position 1 1) East East)  -- pacman
-  (PacMan 3 (Position 2 1) East East)  -- pacman
+  (PacMan 3 initialPlayerPosition East East)  -- pacman
+  (PacMan 3 initialPlayerPosition East East)  -- pacman
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
   where

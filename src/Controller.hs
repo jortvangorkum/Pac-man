@@ -22,7 +22,7 @@ step secs gstate
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
         player = nextPlayer gstate, 
-        nextPlayer = updatePlayer (nextPlayer gstate) (grid gstate), 
+        nextPlayer = interactEnemiesWithPlayer (updatePlayer (nextPlayer gstate) (grid gstate)) (updateEnemies (zip (nextEnemies gstate) rdirs)), 
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
@@ -42,6 +42,7 @@ input e gstate = return (inputKey e gstate)
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate = case c of
   'p' -> gstate { playState = togglePause (playState gstate) }
+  'r' -> initialState
   'w' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
   's' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
   'a' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
@@ -74,6 +75,14 @@ togglePause :: PlayState -> PlayState
 togglePause Playing = Paused
 togglePause Paused = Playing
 
+interactEnemiesWithPlayer :: Player -> [Enemy] -> Player
+interactEnemiesWithPlayer player enemies = player { lives = foldr checkPosition (lives player) enemies }
+  where 
+    checkPosition :: Enemy -> Int -> Int
+    checkPosition enemy lives
+      | posEnemy enemy == posPlayer player = lives - 1
+      | otherwise                          = lives
+
 updatePlayer :: Player -> Grid -> Player
 updatePlayer player grid = 
   {-
@@ -91,7 +100,7 @@ updatePlayer player grid =
     nextTile = getNextTileFromPlayer player grid
     nextTileIntendedDirection = getNextTileFromPlayer (direct player playerIntendedDirection) grid
     checkNextTile = case nextTile of
-        (Wall _)     -> player
+        (Wall _) -> player
         _        -> movePlayer player (dirPlayer player)
 
 gridAfterUpdate :: Grid -> Player -> Grid
