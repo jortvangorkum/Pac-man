@@ -196,20 +196,8 @@ pathFinding enemy target grid
 
 getBestDirection :: [Direction] -> Position -> Position -> Direction
 getBestDirection dirs@(dir:_) current target
-  | abs (y2 - y1) > abs (x2 - x1) = case y2 - y1 < 0 of
-    True -> case checkDirection dirs North of
-      Just x -> x
-      _ -> dir
-    False -> case checkDirection dirs South of
-      Just x -> x
-      _ -> dir
-  | otherwise                     = case x2 - x1 < 0 of
-    True -> case checkDirection dirs West of 
-      Just x -> x
-      _ -> dir
-    False -> case checkDirection dirs East of 
-      Just x -> x
-      _ -> dir
+  | abs (y2 - y1) > abs (x2 - x1) = checkUpDown True
+  | otherwise                     = checkLeftRight True
   where
     x1 = x current
     x2 = x target
@@ -219,3 +207,19 @@ getBestDirection dirs@(dir:_) current target
     checkDirection dirs dir
       | elem dir dirs = Just dir
       | otherwise     = Nothing
+    checkLeftRight :: Bool -> Direction
+    checkLeftRight checkOtherDirection = case x2 - x1 < 0 of
+      True -> case checkDirection dirs West of 
+        Just x -> x
+        _ -> if checkOtherDirection then checkUpDown False else dir
+      False -> case checkDirection dirs East of 
+        Just x -> x
+        _ -> if checkOtherDirection then checkUpDown False else dir
+    checkUpDown :: Bool -> Direction
+    checkUpDown checkOtherDirection = case y2 - y1 < 0 of
+      True -> case checkDirection dirs North of
+        Just x -> x
+        _ -> if checkOtherDirection then checkLeftRight False else dir
+      False -> case checkDirection dirs South of
+        Just x -> x
+        _ -> if checkOtherDirection then checkLeftRight False else dir
