@@ -10,7 +10,18 @@ import Prelude hiding (Right, Left)
 import Data.Foldable (toList)
 import Data.Sequence hiding (zip3, replicate, Empty, zip)
 
+view :: GameState -> IO Picture
+view = return . viewPure
 
+viewPure :: GameState -> Picture
+viewPure gstate = pictures [
+  viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
+  viewTiles ((tiles . grid) gstate), 
+  viewEnemies zippedEnemies (elapsedTime gstate),
+  viewScore (score gstate)
+  ]
+  where
+    zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
@@ -21,9 +32,6 @@ translateToGrid column row = translate 0 (-(fromIntegral topScoreBarSize/2)) . t
     column' = fromIntegral column * tileSize'
     row' = -(fromIntegral row * tileSize')
     tileSize' = fromIntegral tileSize
-
-view :: GameState -> IO Picture
-view = return . viewPure
 
 tileToPicture :: (Tile, Int, Int) -> Picture
 tileToPicture (tile, x, y) = translateToGrid x y o
@@ -55,16 +63,6 @@ tileToPicture (tile, x, y) = translateToGrid x y o
         topWall = c $ translate 0 (t/4) $ rectangleSolid t (t/2)
         bottomRightOutsideWall = pictures [c $ translate (t/2) (-t/2) $ arcSolid 90 180 t, color black $ translate (t/2) (-t/2) $ arcSolid 90 180 (t/2.2)]
         bottomRightInsideWall = c $ translate (t/2) (-t/2) $ arcSolid 90 180 (t/2.2)
-
-
-viewPure :: GameState -> Picture
-viewPure gstate = pictures [
-  viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
-  viewTiles ((tiles . grid) gstate), 
-  viewEnemies zippedEnemies (elapsedTime gstate)
-  ]
-  where
-    zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
 
 extraTranslation :: Int -> Int -> Float -> (Picture -> Picture)
 extraTranslation dx dy time = translate dx' dy'
@@ -141,3 +139,6 @@ viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGri
     y2 = (y . posEnemy) enemyNext
     dx =  x2 - x1
     dy = -(y2 - y1)
+
+viewScore :: Int -> Picture
+viewScore score = translate 0 (fromIntegral spaceForSides / 1.5) $ translateToGrid 0 0 $ scale 0.5 0.5 $ color white $ text ("Score: " ++ show score)

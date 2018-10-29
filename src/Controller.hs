@@ -25,7 +25,8 @@ step secs gstate
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
-        elapsedTime = 0
+        elapsedTime = 0,
+        score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate))
       }
   -- Just update the elapsed time
   | otherwise = 
@@ -135,3 +136,9 @@ oppositeDirection North = South
 oppositeDirection East = West
 oppositeDirection South = North
 oppositeDirection West = East
+
+updateScore :: Int -> Tile -> Int
+updateScore score tile = case tile of
+  PacDot   -> score + 10
+  PacFruit -> score + 50
+  _        -> score

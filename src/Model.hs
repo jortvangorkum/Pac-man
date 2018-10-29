@@ -78,6 +78,7 @@ initialState :: GameState
 initialState = GameState 
   0                                    -- elapsed time
   Playing                              -- play state
+  0                                    -- score
   Chase                                -- ghost mode
   initialGameGrid                      -- grid
   (PacMan 3 (Position 1 1) East East)  -- pacman
@@ -94,6 +95,7 @@ data GameState = GameState {
   -- name
   elapsedTime :: Float,
   playState :: PlayState,
+  score :: Int,
 
   -- name
   ghostMode  :: GhostMode,
