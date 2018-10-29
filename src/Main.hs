@@ -9,7 +9,7 @@ import Settings
 import Graphics.Gloss.Interface.IO.Game
 
 window :: Display
-window = InWindow "Pac-Man" ((\(x,y) -> (x, y+topScoreBarSize)) (windowSizeFromGrid initialGameGrid)) (0, 0)
+window = InWindow "Pac-Man" ((\(x,y) -> (x+spaceForSides, y+spaceForSides+topScoreBarSize)) (windowSizeFromGrid initialGameGrid)) (0, 0)
 
 {-
   Main function

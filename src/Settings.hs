@@ -16,3 +16,6 @@ tileSize = 30
 
 topScoreBarSize :: Int
 topScoreBarSize = tileSize * 3
+
+spaceForSides :: Int
+spaceForSides = 80
