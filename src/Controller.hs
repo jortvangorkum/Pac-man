@@ -22,7 +22,7 @@ step secs gstate
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
         player = nextPlayer gstate, 
-        nextPlayer = interactEnemiesWithPlayer (updatePlayer (nextPlayer gstate) (grid gstate)) (updateEnemies (zip (nextEnemies gstate) rdirs)), 
+        nextPlayer = updatePlayer (interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate)) (grid gstate), 
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
@@ -76,8 +76,12 @@ togglePause Playing = Paused
 togglePause Paused = Playing
 
 interactEnemiesWithPlayer :: Player -> [Enemy] -> Player
-interactEnemiesWithPlayer player enemies = player { lives = foldr checkPosition (lives player) enemies }
+interactEnemiesWithPlayer player enemies = updatePosition (player { lives = foldr checkPosition (lives player) enemies })
   where 
+    updatePosition :: Player -> Player
+    updatePosition updatedPlayer
+      | lives player /= lives updatedPlayer = updatedPlayer { posPlayer = initialPlayerPosition, dirPlayer = East }
+      | otherwise                           = updatedPlayer
     checkPosition :: Enemy -> Int -> Int
     checkPosition enemy lives
       | posEnemy enemy == posPlayer player = lives - 1
