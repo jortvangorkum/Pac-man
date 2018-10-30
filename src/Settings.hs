@@ -12,10 +12,10 @@ secondsBetweenCycles :: Float
 secondsBetweenCycles = 1 / 4
 
 tileSize :: Int
-tileSize = 30
+tileSize = 50
 
 topScoreBarSize :: Int
 topScoreBarSize = tileSize * 3
 
 spaceForSides :: Int
-spaceForSides = 80
+spaceForSides = tileSize * 3

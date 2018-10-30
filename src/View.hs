@@ -146,7 +146,9 @@ viewTopBar :: Picture -> Picture
 viewTopBar picture = translate 0 (fromIntegral spaceForSides / 1.25) $ translateToGrid 0 0 picture
 
 viewText :: Picture -> Picture
-viewText picture = scale 0.25 0.25 $ color white picture
+viewText picture = scale ((t / 30) * 0.25) ((t / 30) * 0.25) $ color white picture
+  where
+    t = fromIntegral tileSize
 
 viewScore :: Int -> Picture
 viewScore score = viewTopBar $ viewText $ text ("Score: " ++ show score)
