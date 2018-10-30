@@ -163,3 +163,4 @@ viewLives :: Int -> Picture
 viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText $ text ("Lives: " ++ show lives)
   where 
     t = fromIntegral tileSize
+
