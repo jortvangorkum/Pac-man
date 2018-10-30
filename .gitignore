@@ -1,4 +1,5 @@
 dist
+src/TestPathFinding.hs
 cabal-dev
 *.o
 *.hi

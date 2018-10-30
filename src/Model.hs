@@ -85,8 +85,9 @@ initialState = GameState
   []                                          -- highscores
   Chase                                       -- ghost mode
   initialGameGrid                             -- grid
+  (countAmountDots initialGameGrid)           -- amount PacDots
   (PacMan 3 initialPlayerPosition East East)  -- pacman
-  (PacMan 3 initialPlayerPosition East East)  -- pacman
+  (PacMan 3 initialPlayerPosition East East)  -- pacman next position
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
   where
@@ -107,6 +108,7 @@ data GameState = GameState {
 
   -- name
   grid :: Grid,
+  dots :: Int,
 
   -- name
   player :: Player,
@@ -180,3 +182,6 @@ getNextPositionFromPlayer player@PacMan{dirPlayer = West, posPlayer = (Position 
 
 updateTileOfGrid :: Grid -> Position -> Tile -> Grid
 updateTileOfGrid grid position@(Position x y) tile = grid { tiles = update (indexFromPosition position) (tile, x, y) (tiles grid) }
+
+countAmountDots :: Grid -> Int
+countAmountDots grid = foldr (\(tile, x, y) count -> if tile == PacDot then count + 1 else count) 0 (tiles grid)

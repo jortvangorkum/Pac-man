@@ -11,7 +11,7 @@ import Data.Char
 import Data.Maybe
 import Data.Aeson
 import qualified Data.ByteString.Lazy as ByteFile
-import Debug.Trace
+import Data.List
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
@@ -26,6 +26,7 @@ step secs gstate
 
   -- finished
   | lives (player gstate) <= 0 = return $ gstate { playState = Finished }
+  | dots gstate <= 0 = return $ gstate { playState = Finished }
 
   -- paused
   | playState gstate == Paused = return gstate
@@ -46,7 +47,8 @@ step secs gstate
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
         elapsedTime = 0,
-        score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate))
+        score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
+        dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate))
       }
   -- Just update the elapsed time
   | otherwise = 
@@ -66,12 +68,14 @@ inputKey (EventKey (Char c) Down _ _) gstate = case c of
   's' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
   'a' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
   'd' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) East (grid gstate) }
+  _   -> gstate 
 
 inputKey (EventKey (SpecialKey s) Down _ _) gstate = case s of
   KeyUp    -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
   KeyDown  -> gstate { nextPlayer = tryDirect (nextPlayer gstate) South (grid gstate) }
   KeyLeft  -> gstate { nextPlayer = tryDirect (nextPlayer gstate) West (grid gstate) }
   KeyRight -> gstate { nextPlayer = tryDirect (nextPlayer gstate) East (grid gstate) }
+  _        -> gstate
 
 inputKey _ gstate = gstate
 
@@ -189,6 +193,10 @@ updateScore score tile = case tile of
   PacFruit -> score + 50
   _        -> score
 
+updateAmountDots :: Int -> Tile -> Int
+updateAmountDots dots tile = case tile of
+  PacDot -> dots - 1
+  _      -> dots
 
 pathFinding :: Enemy -> Position -> Grid -> Direction
 pathFinding enemy target grid
@@ -199,7 +207,6 @@ pathFinding enemy target grid
     possibleDirections = filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid current)
     (dir:_) =  possibleDirections
     current = posEnemy enemy
-
 
 getBestDirection :: [Direction] -> Position -> Position -> Direction
 getBestDirection dirs@(dir:_) current target
@@ -230,3 +237,5 @@ getBestDirection dirs@(dir:_) current target
       else case checkDirection dirs South of
         Just x -> x
         _ -> if checkOtherDirection then checkLeftRight False else dir
+
+
