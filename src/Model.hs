@@ -79,11 +79,12 @@ initialPlayerPosition = Position 14 23
 
 initialState :: GameState
 initialState = GameState 
-  0                                    -- elapsed time
-  Playing                              -- play state
-  0                                    -- score
-  Chase                                -- ghost mode
-  initialGameGrid                      -- grid
+  0                                           -- elapsed time
+  Initialise                                  -- play state
+  0                                           -- score
+  []                                          -- highscores
+  Chase                                       -- ghost mode
+  initialGameGrid                             -- grid
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
@@ -99,6 +100,7 @@ data GameState = GameState {
   elapsedTime :: Float,
   playState :: PlayState,
   score :: Int,
+  highscores :: [Int],
 
   -- name
   ghostMode  :: GhostMode,
@@ -113,7 +115,7 @@ data GameState = GameState {
   nextEnemies :: [Enemy]
 }
 
-data PlayState = Playing | Paused | Finished deriving (Show, Eq)
+data PlayState = Initialise | Playing | Paused | Finished deriving (Show, Eq)
 
 {-
   Name

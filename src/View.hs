@@ -8,7 +8,7 @@ import Controller
 import Settings
 import Prelude hiding (Right, Left)
 import Data.Foldable (toList)
-import Data.Sequence hiding (zip3, replicate, Empty, zip)
+import Data.Sequence hiding (zip3, replicate, Empty, zip, length)
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -154,12 +154,22 @@ viewScore score = viewTopBar $ viewText $ text ("Score: " ++ show score)
 viewPlaystate :: PlayState -> Picture
 viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ viewText $ (text . show) playstate
   where 
-    extraTranslationBasedOnText Playing = translate (-t * 2.25) 0
-    extraTranslationBasedOnText Paused = translate (-t * 2.25) 0
+    extraTranslationBasedOnText Playing  = translate (-t * 2.25) 0
+    extraTranslationBasedOnText Paused   = translate (-t * 2.25) 0
     extraTranslationBasedOnText Finished = translate (-t * 2.5) 0
+    extraTranslationBasedOnText _        = translate 0 0
     t = fromIntegral tileSize
 
 viewLives :: Int -> Picture
 viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText $ text ("Lives: " ++ show lives)
   where 
     t = fromIntegral tileSize
+
+viewHighScores :: [Int] -> Picture
+viewHighScores []               = viewText $ text "no score"
+viewHighScores scores@(score:_) = viewText $ pictures [color black $ rectangleSolid 500 (200 * fromIntegral scoreAmount), translate (-200) (-100 * fromIntegral scoreAmount) scoresAsTextForBox]
+    where
+      scoreAmount = length scores
+      scoresAsText = map (text . show) scores
+      zippedScoresAsText = zip scoresAsText [0 .. scoreAmount]
+      scoresAsTextForBox = pictures (map (\(text, i) -> translate 0 (fromIntegral i*180) text) zippedScoresAsText)

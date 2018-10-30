@@ -9,11 +9,20 @@ import Graphics.Gloss.Interface.IO.Game
 import System.Random
 import Data.Char
 import Data.Maybe
+import Data.Aeson
+import qualified Data.ByteString.Lazy as ByteFile
+import Debug.Trace
 
 -- | Handle one iteration of the game
 step :: Float -> GameState -> IO GameState
 step secs gstate
   -- Game Iteration
+  | playState gstate == Initialise = do
+      highScoreBytes <- ByteFile.readFile "data/highscores.json"
+      return $ gstate { 
+        playState = Playing, 
+        highscores = fromMaybe [] (decode highScoreBytes :: Maybe [Int])
+      }
 
   -- finished
   | lives (player gstate) <= 0 = return $ gstate { playState = Finished }
