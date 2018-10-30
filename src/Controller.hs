@@ -23,7 +23,10 @@ step secs gstate
 
   -- playing
   | elapsedTime gstate + secs > secondsBetweenCycles && playState gstate == Playing = do 
-      rdirs <- return $ map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) (nextEnemies gstate) 
+      -- Random Directions
+      rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
+      -- Chase Player Directions
+      -- rdirs <- return $ map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) (nextEnemies gstate) 
       return $ gstate {
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
