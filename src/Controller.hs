@@ -31,8 +31,8 @@ step secs gstate
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
-        player = interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate) (updateEnemies (zip (nextEnemies gstate) rdirs)), 
-        nextPlayer = updatePlayer (interactEnemiesWithPlayer (nextPlayer gstate) (nextEnemies gstate) (updateEnemies (zip (nextEnemies gstate) rdirs))) (grid gstate), 
+        player = interactPlayerWithEnemies (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate), 
+        nextPlayer = updatePlayer (interactPlayerWithEnemies (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate)) (grid gstate), 
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
@@ -87,28 +87,23 @@ togglePause Paused = Playing
 togglePause Finished = Finished
 
 -- also passes nextEnemies since otherwise the player and enemy can cross eachother without knowing
-interactEnemiesWithPlayer :: Player -> [Enemy] -> [Enemy] -> Player
-interactEnemiesWithPlayer player enemies nextEnemies = updatePosition p'
+interactPlayerWithEnemies :: Player -> Player -> [Enemy] -> Player
+interactPlayerWithEnemies player nextPlayer enemies = updatePosition p'
   where 
-    p' = p { lives = foldr checkPositionOfNextEnemy (lives p) nextEnemies }
-    p = player { lives = foldr checkPositionOfEnemy (lives player) enemies }
+    p'= player { lives = foldr (checkPlayerAndEnemyPosition nextPlayer) (lives p) enemies }
+    p = player { lives = foldr (checkPlayerAndEnemyPosition player) (lives player) enemies }
 
     updatePosition :: Player -> Player
     updatePosition updatedPlayer
       | lives player /= lives updatedPlayer = updatedPlayer { posPlayer = initialPlayerPosition, dirPlayer = East }
       | otherwise                           = updatedPlayer
-
-    -- check if the position is opposite, since in that case you are sure they will collide if their position is also the same
-    checkPositionOfNextEnemy :: Enemy -> Int -> Int
-    checkPositionOfNextEnemy enemy lives 
-      | oppositeDirection (dirEnemy enemy) == dirPlayer player = checkPositionOfEnemy enemy lives
-      | otherwise                                              = lives
       
     -- check if the position is the same, since in that case you are sure they are collided
-    checkPositionOfEnemy :: Enemy -> Int -> Int
-    checkPositionOfEnemy enemy lives
-      | posEnemy enemy == posPlayer player = lives - 1
-      | otherwise                          = lives
+    checkPlayerAndEnemyPosition :: Player -> Enemy -> Int -> Int
+    checkPlayerAndEnemyPosition player enemy lives'
+      | lives player /= lives'             = lives'
+      | posEnemy enemy == posPlayer player = lives' - 1
+      | otherwise                          = lives'
 
 updatePlayer :: Player -> Grid -> Player
 updatePlayer player grid = 
