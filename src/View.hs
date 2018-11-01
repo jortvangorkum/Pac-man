@@ -7,8 +7,9 @@ import Model
 import Controller
 import Settings
 import Prelude hiding (Right, Left)
+import Data.List
 import Data.Foldable (toList)
-import Data.Sequence hiding (zip3, replicate, Empty, zip, length)
+import Data.Sequence hiding (zip3, replicate, Empty, zip, length, sort)
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -20,10 +21,14 @@ viewPure gstate = pictures [
   viewEnemies zippedEnemies (elapsedTime gstate),
   viewScore (score gstate),
   viewPlaystate (playState gstate),
-  viewLives (lives (player gstate))
+  viewLives (lives (player gstate)),
+  viewHighScores (highscores gstate) (playState gstate)
   ]
   where
     zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
+
+sizeFromPercentage :: Float -> Float
+sizeFromPercentage size = fromIntegral tileSize * size
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
@@ -145,16 +150,16 @@ viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGri
 viewTopBar :: Picture -> Picture
 viewTopBar picture = translate 0 (fromIntegral spaceForSides / 1.25) $ translateToGrid 0 0 picture
 
-viewText :: Picture -> Picture
-viewText picture = scale ((t / 30) * 0.25) ((t / 30) * 0.25) $ color white picture
+viewText :: Float -> Picture -> Picture
+viewText size picture = scale ((t / 30) * size) ((t / 30) * size) $ color white picture
   where
     t = fromIntegral tileSize
 
 viewScore :: Int -> Picture
-viewScore score = viewTopBar $ viewText $ text ("Score: " ++ show score)
+viewScore score = viewTopBar $ viewText 0.25 $ text ("Score: " ++ show score)
 
 viewPlaystate :: PlayState -> Picture
-viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ viewText $ (text . show) playstate
+viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ viewText 0.25 $ (text . show) playstate
   where 
     extraTranslationBasedOnText Playing  = translate (-t * 2.25) 0
     extraTranslationBasedOnText Paused   = translate (-t * 2.25) 0
@@ -163,15 +168,22 @@ viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fro
     t = fromIntegral tileSize
 
 viewLives :: Int -> Picture
-viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText $ text ("Lives: " ++ show lives)
+viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText 0.25 $ text ("Lives: " ++ show lives)
   where 
     t = fromIntegral tileSize
 
-viewHighScores :: [Int] -> Picture
-viewHighScores []               = viewText $ text "no score"
-viewHighScores scores@(score:_) = viewText $ pictures [color black $ rectangleSolid 500 (200 * fromIntegral scoreAmount), translate (-200) (-100 * fromIntegral scoreAmount) scoresAsTextForBox]
-    where
-      scoreAmount = length scores
-      scoresAsText = map (text . show) scores
-      zippedScoresAsText = zip scoresAsText [0 .. scoreAmount]
-      scoresAsTextForBox = pictures (map (\(text, i) -> translate 0 (fromIntegral i*180) text) zippedScoresAsText)
+viewHighScores :: [Int] -> PlayState -> Picture
+viewHighScores [] _                       = blank
+viewHighScores scores@(score:_) playstate = case playstate of
+  Finished -> pictures [color black $ rectangleSolid (fromIntegral gameGridWidth * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
+  _        -> blank
+  where
+    scoresSorted = sort scores
+    scoreAmount = length scoresSorted + 1 -- because of the extra highscore element added to the list
+    scoresAsText = map (text . show) scoresSorted
+    zippedScoresAsText = zip3 scoresAsText (map show scoresSorted) [0 .. scoreAmount] ++ [(translate (sizeFromPercentage 3.3) 0 $ text "Highscores:", "Highscores:", scoreAmount)]
+    scoresAsTextForBox = pictures (map (\(text, string, i) -> 
+      viewText 0.35 $ 
+      translate 
+      (fromIntegral (length string) * sizeFromPercentage (-1.35)) 
+      (fromIntegral i * sizeFromPercentage 5) text) zippedScoresAsText)
