@@ -18,7 +18,7 @@ viewPure :: GameState -> Picture
 viewPure gstate = pictures [
   viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
   viewTiles ((tiles . grid) gstate), 
-  viewEnemies zippedEnemies (elapsedTime gstate),
+  viewEnemies zippedEnemies (ghostMode gstate) (elapsedTime gstate),
   viewScore (score gstate),
   viewPlaystate (playState gstate),
   viewLives (lives (player gstate)),
@@ -105,11 +105,11 @@ viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ 
     dy = -(y2 - y1)
     size = fromIntegral tileSize / 2
 
-viewEnemies :: [(Enemy, Enemy)] -> Float -> Picture
-viewEnemies enemies time  = pictures $ map (`viewEnemy` time) enemies
+viewEnemies :: [(Enemy, Enemy)] -> GhostMode -> Float -> Picture
+viewEnemies enemies ghostMode time  = pictures $ map (viewEnemy ghostMode time) enemies
 
-viewEnemy :: (Enemy, Enemy) -> Float -> Picture
-viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGrid x' y' $ pictures [
+viewEnemy ::  GhostMode -> Float -> (Enemy, Enemy) -> Picture
+viewEnemy ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ translateToGrid x' y' $ pictures [
     -- body 
     ghostColor $ arcSolid 0 180 size,
     translate 0 (-size/3) $ ghostColor $ rectangleSolid (fromIntegral tileSize) size,
@@ -128,13 +128,10 @@ viewEnemy (enemy, enemyNext) time = extraTranslation dx dy time $ translateToGri
   ]
   where
     (Position x' y') = posEnemy enemy
-    size = fromIntegral tileSize / 2
-    ghostColor = case enemy of
-      (Blinky _ _) -> color (makeColor (255/255) 0 0 1)
-      (Pinky _ _) -> color (makeColor (255/255) (177/255) (255/255) 1)
-      (Inky _ _) -> color (makeColor 0 (255/255) (255/255) 1)
-      (Clyde _ _) -> color (makeColor (255/255) (182/255) (50/255) 1)
-    -- later do this based on direction
+    size = fromIntegral tileSize / 2 
+    ghostColor = case ghostMode of 
+      Frightened -> color $ makeColor 0 0 (255/255) 1
+      _ -> color $ colEnemy enemy
     eyeDirectionTranslation = case dirEnemy enemyNext of 
       North -> translate 0 (size/5) 
       East -> translate (size/5) 0 
