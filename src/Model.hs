@@ -80,6 +80,7 @@ initialPlayerPosition = Position 14 23
 initialState :: GameState
 initialState = GameState 
   0                                           -- elapsed time
+  0                                           -- cycles passed
   Initialise                                  -- play state
   0                                           -- score
   []                                          -- highscores
@@ -99,6 +100,7 @@ initialState = GameState
 data GameState = GameState { 
   -- name
   elapsedTime :: Float,
+  cyclesPassed :: Int,
   playState :: PlayState,
   score :: Int,
   highscores :: [Int],

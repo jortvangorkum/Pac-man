@@ -47,6 +47,7 @@ step secs gstate
         nextEnemies = updateEnemies (zip (nextEnemies gstate) rdirs),
         -- time
         elapsedTime = 0,
+        cyclesPassed = cyclesPassed gstate + 1,
         score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
         dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate))
       }
