@@ -9,7 +9,7 @@ import Settings
 import Prelude hiding (Right, Left)
 import Data.List
 import Data.Foldable (toList)
-import Data.Sequence hiding (zip3, replicate, Empty, zip, length, sort)
+import Data.Sequence hiding (zip3, replicate, Empty, zip, length, sort, take)
 
 view :: GameState -> IO Picture
 view = return . viewPure
@@ -175,7 +175,7 @@ viewHighScores scores@(score:_) playstate = case playstate of
   Finished -> pictures [color black $ rectangleSolid (fromIntegral gameGridWidth * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
   _        -> blank
   where
-    scoresSorted = sort scores
+    scoresSorted = sort (take 5 scores)
     scoreAmount = length scoresSorted + 1 -- because of the extra highscore element added to the list
     scoresAsText = map (text . show) scoresSorted
     zippedScoresAsText = zip3 scoresAsText (map show scoresSorted) [0 .. scoreAmount] ++ [(translate (sizeFromPercentage 3.3) 0 $ text "Highscores:", "Highscores:", scoreAmount)]

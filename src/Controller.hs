@@ -24,9 +24,18 @@ step secs gstate
         highscores = fromMaybe [] (decode highScoreBytes :: Maybe [Int])
       }
 
-  -- finished
-  | lives (player gstate) <= 0 = return $ gstate { playState = Finished }
-  | dots gstate <= 0 = return $ gstate { playState = Finished }
+  -- Save highscores
+  | playState gstate == SavingHighscore = do
+    savedFile <- ByteFile.writeFile "data/highscores.json" (encode (score gstate : highscores gstate))
+    return $ gstate {
+      playState = Finished,
+      highscores = score gstate : highscores gstate
+    }
+  
+  -- finished (via savinghighscores)
+  | playState gstate == Finished = return gstate
+  | lives (player gstate) <= 0 = return $ gstate { playState = SavingHighscore }
+  | dots gstate <= 0 = return $ gstate { playState = SavingHighscore }
 
   -- paused
   | playState gstate == Paused = return gstate

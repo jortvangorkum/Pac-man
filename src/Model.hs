@@ -132,7 +132,7 @@ data GameState = GameState {
   nextEnemies :: [Enemy]
 }
 
-data PlayState = Initialise | Playing | Paused | Finished deriving (Show, Eq)
+data PlayState = Initialise | Playing | Paused | SavingHighscore | Finished deriving (Show, Eq)
 
 {-
   Name
