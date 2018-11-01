@@ -49,7 +49,9 @@ step secs gstate
         elapsedTime = 0,
         cyclesPassed = cyclesPassed gstate + 1,
         score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
-        dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate))
+        dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
+        ghostMode = updateGhostMode (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (ghostMode gstate) (invincibilityBegin gstate) (cyclesPassed gstate),
+        invincibilityBegin = updateInvicibilityBegin (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (invincibilityBegin gstate) (cyclesPassed gstate)
       }
   -- Just update the elapsed time
   | otherwise = 
@@ -198,6 +200,18 @@ updateAmountDots :: Int -> Tile -> Int
 updateAmountDots dots tile = case tile of
   PacDot -> dots - 1
   _      -> dots
+
+updateGhostMode :: Tile -> GhostMode -> Int -> Int -> GhostMode
+updateGhostMode PacFruit _ _ _ = Frightened
+updateGhostMode _ ghostMode begin current
+  | check     = Chase
+  | otherwise = ghostMode
+  where
+    check = current - begin >= invincibilityCycles && begin > 0
+
+updateInvicibilityBegin :: Tile -> Int -> Int -> Int
+updateInvicibilityBegin PacFruit _ current = current
+updateInvicibilityBegin _ begin _ = begin
 
 pathFinding :: Enemy -> Position -> Grid -> Direction
 pathFinding enemy target grid

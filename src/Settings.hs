@@ -19,3 +19,6 @@ topScoreBarSize = tileSize * 3
 
 spaceForSides :: Int
 spaceForSides = tileSize * 3
+
+invincibilityCycles :: Int
+invincibilityCycles = 15

@@ -7,6 +7,7 @@ import Settings
 import Prelude hiding (lookup, zip3, Right, Left)
 import Data.List hiding (lookup)
 import Data.Sequence hiding (zip3, replicate, Empty)
+import Graphics.Gloss
 
 
 {-
@@ -85,12 +86,23 @@ initialState = GameState
   0                                           -- score
   []                                          -- highscores
   Chase                                       -- ghost mode
+  0                                           -- invincibilityBegin
   initialGameGrid                             -- grid
   (countAmountDots initialGameGrid)           -- amount PacDots
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   (PacMan 3 initialPlayerPosition East East)  -- pacman next position
-  [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
-  [Blinky (Position 12 13) East, Pinky (Position 13 13) East, Inky (Position 14 13) East, Clyde (Position 15 13) East]
+  [
+    Blinky (Position 12 13) East (makeColor (255/255) 0 0 1),
+    Pinky (Position 13 13) East (makeColor (255/255) (177/255) (255/255) 1),
+    Inky (Position 14 13) East (makeColor 0 (255/255) (255/255) 1),
+    Clyde (Position 15 13) East (makeColor (255/255) (182/255) (50/255) 1)
+  ]
+  [
+    Blinky (Position 12 13) East (makeColor (255/255) 0 0 1),
+    Pinky (Position 13 13) East (makeColor (255/255) (177/255) (255/255) 1),
+    Inky (Position 14 13) East (makeColor 0 (255/255) (255/255) 1),
+    Clyde (Position 15 13) East (makeColor (255/255) (182/255) (50/255) 1)
+  ]
   where
     dirs = [North, South, West, East]
 
@@ -107,6 +119,7 @@ data GameState = GameState {
 
   -- name
   ghostMode  :: GhostMode,
+  invincibilityBegin :: Int,
 
   -- name
   grid :: Grid,
@@ -126,10 +139,10 @@ data PlayState = Initialise | Playing | Paused | Finished deriving (Show, Eq)
 -}
 data Player = PacMan { lives :: Int, posPlayer :: Position, dirPlayer :: Direction, intendedDirPlayer  :: Direction }
 data Enemy = 
-  Blinky { posEnemy :: Position, dirEnemy :: Direction } 
-  | Pinky { posEnemy :: Position, dirEnemy :: Direction } 
-  | Inky { posEnemy :: Position, dirEnemy :: Direction } 
-  | Clyde { posEnemy :: Position, dirEnemy :: Direction } 
+  Blinky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
+  | Pinky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
+  | Inky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
+  | Clyde { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
 
 {-
   Name
