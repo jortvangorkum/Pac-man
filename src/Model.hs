@@ -13,8 +13,8 @@ import Graphics.Gloss
 {-
   Initialization
 -}
-initialGameTiles :: [Tile]
-initialGameTiles = [
+levelOneTiles :: [Tile]
+levelOneTiles = [
   m, t, t, t, t, t, t, t, t, t, t, t, t, n, m, t, t, t, t, t, t, t, t, t, t, t, t, n,
   l, d, d, d, d, d, d, d, d, d, d, d, d, r, l, d, d, d, d, d, d, d, d, d, d, d, d, r,
   l, d, q, b, b, x, d, q, b, b, b, x, d, r, l, d, q, b, b, b, x, d, q, b, b, x, d, r,
@@ -66,14 +66,15 @@ initialGameTiles = [
     x = Wall CornerFromLeftToBottomInside
     y = Wall CornerFromTopToLeftInside
     z = Wall CornerFromRightToTopInside
+    
 
 gameGridWidth :: Int
 gameGridWidth = 28
 gameGridHeight :: Int
 gameGridHeight = 31
 
-initialGameGrid :: Grid
-initialGameGrid = Grid gameGridWidth gameGridHeight (parseGrid initialGameTiles gameGridWidth gameGridHeight)
+levelOneGrid :: Grid
+levelOneGrid = Grid gameGridWidth gameGridHeight (parseGrid levelOneTiles gameGridWidth gameGridHeight)
 
 initialPlayerPosition :: Position
 initialPlayerPosition = Position 14 23
@@ -87,8 +88,8 @@ initialState = GameState
   []                                          -- highscores
   Chase                                       -- ghost mode
   0                                           -- invincibilityBegin
-  initialGameGrid                             -- grid
-  (countAmountDots initialGameGrid)           -- amount PacDots
+  levelOneGrid                             -- grid
+  (countAmountDots levelOneGrid)           -- amount PacDots
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   (PacMan 3 initialPlayerPosition East East)  -- pacman next position
   [

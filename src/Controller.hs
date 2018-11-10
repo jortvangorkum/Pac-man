@@ -74,6 +74,8 @@ input e gstate = return (inputKey e gstate)
 
 inputKey :: Event -> GameState -> GameState
 inputKey (EventKey (Char c) Down _ _) gstate = case c of
+  '1' -> gstate { grid = levelOneGrid }
+  '2' -> gstate { grid = levelOneGrid }
   'p' -> gstate { playState = togglePause (playState gstate) }
   'r' -> initialState
   'w' -> gstate { nextPlayer = tryDirect (nextPlayer gstate) North (grid gstate) }
