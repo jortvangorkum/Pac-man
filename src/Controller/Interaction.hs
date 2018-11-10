@@ -36,7 +36,7 @@ updateAmountDots dots tile = case tile of
   _      -> dots
 
 updateGhostMode :: Tile -> GhostMode -> Int -> Int -> GhostMode
-updateGhostMode PacFruit _ _ _ = Frightened
+updateGhostMode PacFruit _ _ _ = Scatter
 updateGhostMode _ ghostMode begin current
   | check     = Chase
   | otherwise = ghostMode
