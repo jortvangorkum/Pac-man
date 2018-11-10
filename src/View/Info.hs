@@ -5,6 +5,7 @@ import Model.Grid
 import Settings
 import Helpers
 import Graphics.Gloss
+import Data.Ord
 
 import Data.List
 
@@ -31,7 +32,7 @@ viewHighScores grid scores@(score:_) playstate = case playstate of
   Finished -> pictures [color black $ rectangleSolid (fromIntegral (width grid) * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
   _        -> blank
   where
-    scoresSorted = sort (take 5 scores)
+    scoresSorted = reverse $ take 5 $ sortOn Down scores
     scoreAmount = length scoresSorted + 1 -- because of the extra highscore element added to the list
     scoresAsText = map (text . show) scoresSorted
     zippedScoresAsText = zip3 scoresAsText (map show scoresSorted) [0 .. scoreAmount] ++ [(translate (sizeFromPercentage 3.3) 0 $ text "Highscores:", "Highscores:", scoreAmount)]
