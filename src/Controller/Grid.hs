@@ -1,6 +1,7 @@
 module Controller.Grid where
 
 import Model
+import Model.Grid
 import Settings
 import Helpers
 

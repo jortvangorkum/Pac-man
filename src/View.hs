@@ -10,6 +10,7 @@ import View.Info
 
 import Graphics.Gloss
 import Model
+import Model.Grid
 import Helpers
 import Controller
 import Settings

@@ -1,12 +1,15 @@
 module Helpers where
 
 import Model
+import Model.Grid
 import Settings
 import Graphics.Gloss
 import Data.Maybe
 import Prelude hiding (lookup, zip3, Right, Left)
 import Data.List hiding (lookup)
 import Data.Sequence hiding (zip3, replicate, Empty)
+
+
 
 {-
   View helpers

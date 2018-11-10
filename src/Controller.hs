@@ -11,6 +11,7 @@ import Controller.Pathfinding
 import Controller.Grid
 
 import Model
+import Model.Grid
 import Helpers
 import Settings
 

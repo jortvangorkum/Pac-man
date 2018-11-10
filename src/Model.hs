@@ -9,6 +9,10 @@ import Data.List hiding (lookup)
 import Data.Sequence hiding (length, zip3, replicate, Empty)
 import Graphics.Gloss
 
+-- models
+import Model.Grid
+import Model.LevelOne
+
 {-
   Initialization
 -}
@@ -78,80 +82,6 @@ data GhostMode = Chase | Scatter | Frightened
 -}
 data Position = Position { x :: Int, y :: Int } deriving (Show, Eq)
 data Direction = North | East | South | West deriving (Show, Eq)
-data Grid = Grid { tiles :: Seq (Tile, Int, Int), width :: Int, height :: Int, dots :: Int }
-data Tile = Empty | Wall WallType | PacDot | PacFruit deriving (Show, Eq)  
-data WallType = Full | Top | Right | Bottom | Left 
-              | CornerFromBottomToRightOutside | CornerFromLeftToBottomOutside | CornerFromTopToLeftOutside | CornerFromRightToTopOutside 
-              | CornerFromBottomToRightInside | CornerFromLeftToBottomInside | CornerFromTopToLeftInside | CornerFromRightToTopInside 
-              deriving (Show, Eq)  
-
-
-parseGrid :: [[Tile]] -> (Seq (Tile, Int, Int), Int, Int, Int)
-parseGrid tiles@(first:_) = (fromList (zip3 (concat tiles) columnIndexArray rowIndexArray), width, height, dots)
-  where 
-    width = length first 
-    height = length tiles
-    columnIndexArray = (concat . replicate height) [0 .. width - 1]
-    rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]
-    dots = countAmountDots (concat tiles)
-
-countAmountDots :: [Tile] -> Int
-countAmountDots = foldr (\tile count -> if tile == PacDot then count + 1 else count) 0
-
-levelOneTiles :: [[Tile]]
-levelOneTiles = [
-  [m, t, t, t, t, t, t, t, t, t, t, t, t, n, m, t, t, t, t, t, t, t, t, t, t, t, t, n],
-  [l, d, d, d, d, d, d, d, d, d, d, d, d, r, l, d, d, d, d, d, d, d, d, d, d, d, d, r],
-  [l, d, q, b, b, x, d, q, b, b, b, x, d, r, l, d, q, b, b, b, x, d, q, b, b, x, d, r],
-  [l, d, r, w, w, l, d, r, w, w, w, l, d, r, l, d, r, w, w, w, l, d, r, w, w, l, d, r],
-  [l, f, z, t, t, y, d, z, t, t, t, y, d, z, y, d, z, t, t, t, y, d, z, t, t, y, f, r],
-  [l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r],
-  [l, d, q, b, b, x, d, q, x, d, q, b, b, b, b, b, b, x, d, q, x, d, q, b, b, x, d, r],
-  [l, d, z, t, t, y, d, r, l, d, z, t, t, n, m, t, t, y, d, r, l, d, z, t, t, y, d, r],
-  [l, d, d, d, d, d, d, r, l, d, d, d, d, r, l, d, d, d, d, r, l, d, d, d, d, d, d, r],
-  [p, b, b, b, b, x, d, r, p, b, b, x, d, r, l, d, q, b, b, o, l, d, q, b, b, b, b, o],
-  [e, e, e, e, e, l, d, r, m, t, t, y, d, z, y, d, z, t, t, n, l, d, r, e, e, e, e, e],
-  [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
-  [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
-  [m, t, t, t, t, y, d, z, y, d, d, e, e, e, e, e, e, d, d, z, y, d, z, t, t, t, t, n],
-  [l, d, d, d, d, d, d, d, d, d, d, e, e, e, e, e, e, d, d, d, d, d, d, d, d, d, d, r],
-  [p, b, b, b, b, x, d, q, x, d, d, e, e, e, e, e, e, d, d, q, x, d, q, b, b, b, b, o],
-  [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
-  [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
-  [e, e, e, e, e, l, d, r, l, d, q, b, b, b, b, b, b, x, d, r, l, d, r, e, e, e, e, e],
-  [m, t, t, t, t, y, d, z, y, d, z, t, t, n, m, t, t, y, d, z, y, d, z, t, t, t, t, n],
-  [l, d, d, d, d, d, d, d, d, d, d, d, d, r, l, d, d, d, d, d, d, d, d, d, d, d, d, r],
-  [l, d, q, b, b, x, d, q, b, b, b, x, d, r, l, d, q, b, b, b, x, d, q, b, b, x, d, r],
-  [l, d, z, t, n, l, d, z, t, t, t, y, d, z, y, d, z, t, t, t, y, d, r, m, t, y, d, r],
-  [l, f, d, d, r, l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r, l, d, d, f, r],
-  [p, b, x, d, r, l, d, q, x, d, q, b, b, b, b, b, b, x, d, q, x, d, r, l, d, q, b, o],
-  [m, t, y, d, z, y, d, r, l, d, z, t, t, n, m, t, t, y, d, r, l, d, z, y, d, z, t, n],
-  [l, d, d, d, d, d, d, r, l, d, d, d, d, r, l, d, d, d, d, r, l, d, d, d, d, d, d, r],
-  [l, d, q, b, b, b, b, o, p, b, b, x, d, r, l, d, q, b, b, o, p, b, b, b, b, x, d, r],
-  [l, d, z, t, t, t, t, t, t, t, t, y, d, z, y, d, z, t, t, t, t, t, t, t, t, y, d, r],
-  [l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r],
-  [p, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, o]
-  ]
-  where 
-    w = Wall Full
-    d = PacDot
-    f = PacFruit
-    e = Empty
-    t = Wall Top
-    r = Wall Right
-    b = Wall Bottom
-    l = Wall Left
-
-    m = Wall CornerFromBottomToRightOutside
-    n = Wall CornerFromLeftToBottomOutside
-    o = Wall CornerFromTopToLeftOutside
-    p = Wall CornerFromRightToTopOutside
-
-    q = Wall CornerFromBottomToRightInside
-    x = Wall CornerFromLeftToBottomInside
-    y = Wall CornerFromTopToLeftInside
-    z = Wall CornerFromRightToTopInside
 
 levelOneGrid :: Grid
-levelOneGrid = Grid tiles width height dots
-  where (tiles, width, height, dots) = parseGrid levelOneTiles
+levelOneGrid = Grid tiles width height dots where (tiles, width, height, dots) = parseGrid levelOneTiles
