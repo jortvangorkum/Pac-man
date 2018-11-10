@@ -11,7 +11,7 @@ import Graphics.Gloss
 
 
 {-
-  Initialization
+  Level One
 -}
 levelOneTiles :: [Tile]
 levelOneTiles = [
@@ -66,15 +66,69 @@ levelOneTiles = [
     x = Wall CornerFromLeftToBottomInside
     y = Wall CornerFromTopToLeftInside
     z = Wall CornerFromRightToTopInside
-    
 
-gameGridWidth :: Int
-gameGridWidth = 28
-gameGridHeight :: Int
-gameGridHeight = 31
+  {-
+  Level One
+-}
+levelTwoTiles :: [Tile]
+levelTwoTiles = [
+  m, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, n,
+  l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r,
+  l, d, q, b, b, x, d, q, b, b, b, x, d, q, b, b, x, d, r,
+  l, d, r, w, w, l, d, r, w, w, w, l, d, r, w, w, l, d, r,
+  l, f, z, t, t, y, d, z, t, t, t, y, d, z, t, t, y, f, r,
+  l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r,
+  l, d, q, b, b, x, d, q, x, d, q, x, d, q, b, b, x, d, r,
+  l, d, z, t, t, y, d, r, l, d, r, l, d, z, t, t, y, d, r,
+  l, d, d, d, d, d, d, r, l, d, r, l, d, d, d, d, d, d, r,
+  p, b, b, b, b, x, d, r, p, b, o, l, d, q, b, b, b, b, o,
+  e, e, e, e, e, l, d, r, m, t, n, l, d, r, e, e, e, e, e,
+  e, e, e, e, e, l, d, r, l, d, r, l, d, r, e, e, e, e, e,
+  e, e, e, e, e, l, d, r, l, d, r, l, d, r, e, e, e, e, e,
+  m, t, t, t, t, y, d, z, y, d, z, y, d, z, t, t, t, t, n,
+  l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r,
+  p, b, b, b, b, x, d, q, x, d, q, x, d, q, b, b, b, b, o,
+  e, e, e, e, e, l, d, r, l, d, r, l, d, r, e, e, e, e, e,
+  e, e, e, e, e, l, d, r, l, d, r, l, d, r, e, e, e, e, e,
+  e, e, e, e, e, l, d, r, l, d, r, l, d, r, e, e, e, e, e,
+  m, t, t, t, t, y, d, z, y, d, z, y, d, z, t, t, t, t, n,
+  l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r,
+  l, d, q, b, b, x, d, q, b, b, b, x, d, q, b, b, x, d, r,
+  l, d, z, t, n, l, d, z, t, t, t, y, d, r, m, t, y, d, r,
+  l, f, d, d, r, l, d, d, d, d, d, d, d, r, l, d, d, f, r,
+  p, b, x, d, r, l, d, q, x, d, q, x, d, r, l, d, q, b, o,
+  m, t, y, d, z, y, d, r, l, d, r, l, d, z, y, d, z, t, n,
+  l, d, d, d, d, d, d, r, l, d, r, l, d, d, d, d, d, d, r,
+  l, d, q, b, b, b, b, o, p, b, o, p, b, b, b, b, x, d, r,
+  l, d, z, t, t, t, t, t, t, t, t, t, t, t, t, t, y, d, r,
+  l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r,
+  p, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, o
+  ]
+  where 
+    w = Wall Full
+    d = PacDot
+    f = PacFruit
+    e = Empty
+    t = Wall Top
+    r = Wall Right
+    b = Wall Bottom
+    l = Wall Left
+
+    m = Wall CornerFromBottomToRightOutside
+    n = Wall CornerFromLeftToBottomOutside
+    o = Wall CornerFromTopToLeftOutside
+    p = Wall CornerFromRightToTopOutside
+
+    q = Wall CornerFromBottomToRightInside
+    x = Wall CornerFromLeftToBottomInside
+    y = Wall CornerFromTopToLeftInside
+    z = Wall CornerFromRightToTopInside
 
 levelOneGrid :: Grid
-levelOneGrid = Grid gameGridWidth gameGridHeight (parseGrid levelOneTiles gameGridWidth gameGridHeight)
+levelOneGrid = Grid 28 31 (parseGrid levelOneTiles 28 31)
+
+levelTwoGrid :: Grid
+levelTwoGrid = Grid 19 31 (parseGrid levelTwoTiles 19 31)
 
 initialPlayerPosition :: Position
 initialPlayerPosition = Position 14 23
@@ -88,8 +142,8 @@ initialState = GameState
   []                                          -- highscores
   Chase                                       -- ghost mode
   0                                           -- invincibilityBegin
-  levelOneGrid                             -- grid
-  (countAmountDots levelOneGrid)           -- amount PacDots
+  levelOneGrid                                -- grid
+  (countAmountDots levelOneGrid)              -- amount PacDots
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   (PacMan 3 initialPlayerPosition East East)  -- pacman next position
   [
@@ -164,8 +218,8 @@ data WallType = Full | Top | Right | Bottom | Left
               deriving (Show, Eq)  
 
 
-indexFromPosition :: Position -> Int
-indexFromPosition (Position x y) = x + gameGridWidth * y
+indexFromPosition :: Position -> Grid -> Int
+indexFromPosition (Position x y) grid = x + width grid * y
 
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
 halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
@@ -180,7 +234,7 @@ parseGrid tiles width height = fromList (zip3 tiles columnIndexArray rowIndexArr
     rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]
 
 getTileFromGrid :: Grid -> Position -> Tile
-getTileFromGrid (Grid _ _ tiles) position = case lookup (indexFromPosition position) tiles of
+getTileFromGrid grid@(Grid _ _ tiles) position = case lookup (indexFromPosition position grid) tiles of
   Just (tile, _, _) -> tile
   _                 -> error "Position is outside of the Grid"
 
@@ -197,7 +251,7 @@ getNextPositionFromPlayer player@PacMan{dirPlayer = South, posPlayer = (Position
 getNextPositionFromPlayer player@PacMan{dirPlayer = West, posPlayer = (Position x y)}  = Position (x-1) y
 
 updateTileOfGrid :: Grid -> Position -> Tile -> Grid
-updateTileOfGrid grid position@(Position x y) tile = grid { tiles = update (indexFromPosition position) (tile, x, y) (tiles grid) }
+updateTileOfGrid grid position@(Position x y) tile = grid { tiles = update (indexFromPosition position grid) (tile, x, y) (tiles grid) }
 
 countAmountDots :: Grid -> Int
 countAmountDots grid = foldr (\(tile, x, y) count -> if tile == PacDot then count + 1 else count) 0 (tiles grid)

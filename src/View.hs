@@ -16,13 +16,13 @@ view = return . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gstate = pictures [
-  viewPlayer (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
-  viewTiles ((tiles . grid) gstate), 
-  viewEnemies zippedEnemies (ghostMode gstate) (elapsedTime gstate),
-  viewScore (score gstate),
-  viewPlaystate (playState gstate),
-  viewLives (lives (player gstate)),
-  viewHighScores (highscores gstate) (playState gstate)
+  viewPlayer (grid gstate) (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
+  viewTiles (grid gstate), 
+  viewEnemies (grid gstate) zippedEnemies (ghostMode gstate) (elapsedTime gstate),
+  viewScore (grid gstate) (score gstate),
+  viewPlaystate (grid gstate) (playState gstate),
+  viewLives (grid gstate) (lives (player gstate)),
+  viewHighScores (grid gstate) (highscores gstate) (playState gstate)
   ]
   where
     zippedEnemies = zip (enemies gstate) (nextEnemies gstate)
@@ -31,17 +31,17 @@ sizeFromPercentage :: Float -> Float
 sizeFromPercentage size = fromIntegral tileSize * size
 
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
-translateToGrid :: Int -> Int -> (Picture -> Picture)
-translateToGrid column row = translate 0 (-(fromIntegral topScoreBarSize/2)) . translate width height . translate column' row' . translate (tileSize' / 2) (-tileSize' / 2)
+translateToGrid :: Grid -> Int -> Int -> (Picture -> Picture)
+translateToGrid grid column row = translate 0 (-(fromIntegral topScoreBarSize/2)) . translate width' height' . translate column' row' . translate (tileSize' / 2) (-tileSize' / 2)
   where
-    width = -(fromIntegral (gameGridWidth * tileSize) / 2)
-    height = fromIntegral(gameGridHeight * tileSize) / 2
+    width' = -(fromIntegral (width grid * tileSize) / 2)
+    height' = fromIntegral(height grid * tileSize) / 2
     column' = fromIntegral column * tileSize'
     row' = -(fromIntegral row * tileSize')
     tileSize' = fromIntegral tileSize
 
-tileToPicture :: (Tile, Int, Int) -> Picture
-tileToPicture (tile, x, y) = translateToGrid x y o
+tileToPicture :: Grid -> (Tile, Int, Int) -> Picture
+tileToPicture grid (tile, x, y) = translateToGrid grid x y o
   where
     t = fromIntegral tileSize
     c = case tile of
@@ -78,15 +78,15 @@ extraTranslation dx dy time = translate dx' dy'
     dy' = fromIntegral dy * extraTranslationAmount
     extraTranslationAmount = (time / secondsBetweenCycles) * fromIntegral tileSize
 
-viewTiles :: Seq (Tile, Int, Int) -> Picture
-viewTiles tiles = pictures $ map tileToPicture (toList tiles)
+viewTiles :: Grid -> Picture
+viewTiles grid = pictures $ map (tileToPicture grid) (toList (tiles grid))
 
-viewPlayer :: Player -> Player -> Float -> Picture
-viewPlayer player playerNext time = case player of
-  PacMan {}  -> viewPacMan player playerNext time
+viewPlayer :: Grid -> Player -> Player -> Float -> Picture
+viewPlayer grid player playerNext time = case player of
+  PacMan {}  -> viewPacMan grid player playerNext time
 
-viewPacMan :: Player -> Player -> Float -> Picture
-viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ rotation $ pictures [
+viewPacMan :: Grid -> Player -> Player -> Float -> Picture
+viewPacMan grid p pNext time = extraTranslation dx dy time $ translateToGrid grid x1 y1 $ rotation $ pictures [
   color yellow $ circleSolid size, 
   color black $ arcSolid (20 + (amount * 70)) (160 - (amount * 70)) (size + 1)
   ]
@@ -105,11 +105,11 @@ viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ 
     dy = -(y2 - y1)
     size = fromIntegral tileSize / 2
 
-viewEnemies :: [(Enemy, Enemy)] -> GhostMode -> Float -> Picture
-viewEnemies enemies ghostMode time  = pictures $ map (viewEnemy ghostMode time) enemies
+viewEnemies :: Grid -> [(Enemy, Enemy)] -> GhostMode -> Float -> Picture
+viewEnemies grid enemies ghostMode time  = pictures $ map (viewEnemy grid ghostMode time) enemies
 
-viewEnemy ::  GhostMode -> Float -> (Enemy, Enemy) -> Picture
-viewEnemy ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ translateToGrid x' y' $ pictures [
+viewEnemy :: Grid -> GhostMode -> Float -> (Enemy, Enemy) -> Picture
+viewEnemy grid ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ translateToGrid grid x' y' $ pictures [
     -- body 
     ghostColor $ arcSolid 0 180 size,
     translate 0 (-size/3) $ ghostColor $ rectangleSolid (fromIntegral tileSize) size,
@@ -144,19 +144,19 @@ viewEnemy ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ tran
     dx =  x2 - x1
     dy = -(y2 - y1)
 
-viewTopBar :: Picture -> Picture
-viewTopBar picture = translate 0 (fromIntegral spaceForSides / 1.25) $ translateToGrid 0 0 picture
+viewTopBar :: Grid -> Picture -> Picture
+viewTopBar grid picture = translate 0 (fromIntegral spaceForSides / 1.25) $ translateToGrid grid 0 0 picture
 
 viewText :: Float -> Picture -> Picture
 viewText size picture = scale ((t / 30) * size) ((t / 30) * size) $ color white picture
   where
     t = fromIntegral tileSize
 
-viewScore :: Int -> Picture
-viewScore score = viewTopBar $ viewText 0.25 $ text ("Score: " ++ show score)
+viewScore :: Grid -> Int -> Picture
+viewScore grid score = viewTopBar grid $ viewText 0.25 $ text ("Score: " ++ show score)
 
-viewPlaystate :: PlayState -> Picture
-viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ viewText 0.25 $ (text . show) playstate
+viewPlaystate :: Grid -> PlayState -> Picture
+viewPlaystate grid playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (width grid * tileSize) / 2) 0 $ viewTopBar grid $ viewText 0.25 $ (text . show) playstate
   where 
     extraTranslationBasedOnText Playing  = translate (-t * 2.25) 0
     extraTranslationBasedOnText Paused   = translate (-t * 2.25) 0
@@ -164,15 +164,15 @@ viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fro
     extraTranslationBasedOnText _        = translate 0 0
     t = fromIntegral tileSize
 
-viewLives :: Int -> Picture
-viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText 0.25 $ text ("Lives: " ++ show lives)
+viewLives :: Grid -> Int -> Picture
+viewLives grid lives = translate (-t * 4.7) 0 $ translate (fromIntegral (width grid * tileSize)) 0 $ viewTopBar grid $ viewText 0.25 $ text ("Lives: " ++ show lives)
   where 
     t = fromIntegral tileSize
 
-viewHighScores :: [Int] -> PlayState -> Picture
-viewHighScores [] _                       = blank
-viewHighScores scores@(score:_) playstate = case playstate of
-  Finished -> pictures [color black $ rectangleSolid (fromIntegral gameGridWidth * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
+viewHighScores :: Grid -> [Int] -> PlayState -> Picture
+viewHighScores _ [] _                       = blank
+viewHighScores grid scores@(score:_) playstate = case playstate of
+  Finished -> pictures [color black $ rectangleSolid (fromIntegral (width grid) * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
   _        -> blank
   where
     scoresSorted = sort (take 5 scores)
