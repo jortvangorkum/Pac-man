@@ -10,11 +10,11 @@ import Data.List
 import Data.Foldable (toList)
 import Data.Sequence hiding (zip3, replicate, Empty, zip, length, sort, take)
 
-viewTiles :: Seq (Tile, Int, Int) -> Picture
-viewTiles tiles = pictures $ map tileToPicture (toList tiles)
+viewTiles :: Grid -> Seq (Tile, Int, Int) -> Picture
+viewTiles grid tiles = pictures $ map (tileToPicture grid) (toList tiles)
 
-tileToPicture :: (Tile, Int, Int) -> Picture
-tileToPicture (tile, x, y) = translateToGrid x y o
+tileToPicture :: Grid -> (Tile, Int, Int) -> Picture
+tileToPicture grid (tile, x, y) = translateToGrid grid x y o
   where
     t = fromIntegral tileSize
     c = case tile of

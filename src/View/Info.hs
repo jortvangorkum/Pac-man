@@ -7,11 +7,11 @@ import Graphics.Gloss
 
 import Data.List
 
-viewScore :: Int -> Picture
-viewScore score = viewTopBar $ viewText 0.25 $ text ("Score: " ++ show score)
+viewScore :: Grid -> Int -> Picture
+viewScore grid score = viewTopBar grid $ viewText 0.25 $ text ("Score: " ++ show score)
 
-viewPlaystate :: PlayState -> Picture
-viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (gameGridWidth * tileSize) / 2) 0 $ viewTopBar $ viewText 0.25 $ (text . show) playstate
+viewPlaystate :: Grid -> PlayState -> Picture
+viewPlaystate grid playstate = extraTranslationBasedOnText playstate $ translate (fromIntegral (width grid * tileSize) / 2) 0 $ viewTopBar grid $ viewText 0.25 $ (text . show) playstate
   where 
     extraTranslationBasedOnText Playing  = translate (-t * 2.25) 0
     extraTranslationBasedOnText Paused   = translate (-t * 2.25) 0
@@ -19,15 +19,15 @@ viewPlaystate playstate = extraTranslationBasedOnText playstate $ translate (fro
     extraTranslationBasedOnText _        = translate 0 0
     t = fromIntegral tileSize
 
-viewLives :: Int -> Picture
-viewLives lives = translate (-t * 4.7) 0 $ translate (fromIntegral (gameGridWidth * tileSize)) 0 $ viewTopBar $ viewText 0.25 $ text ("Lives: " ++ show lives)
+viewLives :: Grid -> Int -> Picture
+viewLives grid lives = translate (-t * 4.7) 0 $ translate (fromIntegral (width grid * tileSize)) 0 $ viewTopBar grid $ viewText 0.25 $ text ("Lives: " ++ show lives)
   where 
     t = fromIntegral tileSize
 
-viewHighScores :: [Int] -> PlayState -> Picture
-viewHighScores [] _                       = blank
-viewHighScores scores@(score:_) playstate = case playstate of
-  Finished -> pictures [color black $ rectangleSolid (fromIntegral gameGridWidth * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
+viewHighScores :: Grid -> [Int] -> PlayState -> Picture
+viewHighScores _ [] _                       = blank
+viewHighScores grid scores@(score:_) playstate = case playstate of
+  Finished -> pictures [color black $ rectangleSolid (fromIntegral (width grid) * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
   _        -> blank
   where
     scoresSorted = sort (take 5 scores)

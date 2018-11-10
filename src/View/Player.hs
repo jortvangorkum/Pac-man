@@ -5,12 +5,12 @@ import Settings
 import Helpers
 import Graphics.Gloss
 
-viewPlayer :: Player -> Player -> Float -> Picture
-viewPlayer player playerNext time = case player of
-  PacMan {}  -> viewPacMan player playerNext time
+viewPlayer :: Grid -> Player -> Player -> Float -> Picture
+viewPlayer grid player playerNext time = case player of
+  PacMan {}  -> viewPacMan grid player playerNext time
 
-viewPacMan :: Player -> Player -> Float -> Picture
-viewPacMan p pNext time = extraTranslation dx dy time $ translateToGrid x1 y1 $ rotation $ pictures [
+viewPacMan :: Grid -> Player -> Player -> Float -> Picture
+viewPacMan grid p pNext time = extraTranslation dx dy time $ translateToGrid grid x1 y1 $ rotation $ pictures [
   color yellow $ circleSolid size, 
   color black $ arcSolid (20 + (amount * 70)) (160 - (amount * 70)) (size + 1)
   ]

@@ -5,11 +5,11 @@ import Settings
 import Helpers
 import Graphics.Gloss
 
-viewEnemies :: [(Enemy, Enemy)] -> GhostMode -> Float -> Picture
-viewEnemies enemies ghostMode time  = pictures $ map (viewEnemy ghostMode time) enemies
+viewEnemies :: Grid -> [(Enemy, Enemy)] -> GhostMode -> Float -> Picture
+viewEnemies grid enemies ghostMode time  = pictures $ map (viewEnemy grid ghostMode time) enemies
 
-viewEnemy ::  GhostMode -> Float -> (Enemy, Enemy) -> Picture
-viewEnemy ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ translateToGrid x' y' $ pictures [
+viewEnemy :: Grid ->  GhostMode -> Float -> (Enemy, Enemy) -> Picture
+viewEnemy grid ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $ translateToGrid grid x' y' $ pictures [
     -- body 
     ghostColor $ arcSolid 0 180 size,
     translate 0 (-size/3) $ ghostColor $ rectangleSolid (fromIntegral tileSize) size,

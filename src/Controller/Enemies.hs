@@ -10,6 +10,10 @@ updateEnemies :: GhostMode -> [(Enemy, Direction, Direction)]-> [Enemy]
 updateEnemies ghostMode = map (updateEnemy ghostMode)
 
 updateEnemy :: GhostMode -> (Enemy, Direction, Direction) -> Enemy
+-- specific enemy behavior
+-- updateEnemy Chase (enemy@Blinky{}, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) cdir, dirEnemy = cdir }
+
+-- general enemy behavior
 updateEnemy Scatter (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
 updateEnemy Chase (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) cdir, dirEnemy = cdir }
 updateEnemy Frightened (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }

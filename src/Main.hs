@@ -5,6 +5,7 @@ import Controller.Input
 import Model
 import View
 import Settings
+import Helpers
 
 -- Graphics Library: IO Version of Gloss
 import Graphics.Gloss.Interface.IO.Game

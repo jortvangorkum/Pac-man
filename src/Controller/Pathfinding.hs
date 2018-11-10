@@ -6,12 +6,14 @@ import Helpers
 
 pathFinding :: Enemy -> Position -> Grid -> Direction
 pathFinding enemy target grid
-  | length possibleDirections > 1 = getBestDirection possibleDirections current target
-  | otherwise                     = dir
+  | length possibleDirections > 1   = getBestDirection possibleDirections current target
+  -- we can use head, since we are sure there is an element in the array, and pattern matching is not possible in this case, since it throws an error
+  | length possibleDirections == 1  = head possibleDirections
+  -- if ghost chases and gets stuck in an alley
+  | otherwise                       = oppositeDirection (dirEnemy enemy)
   where
     possibleDirections :: [Direction]
     possibleDirections = filter (\dir -> dir /= oppositeDirection (dirEnemy enemy)) (getDirections grid current)
-    (dir:_) =  possibleDirections
     current = posEnemy enemy
 
 getBestDirection :: [Direction] -> Position -> Position -> Direction
