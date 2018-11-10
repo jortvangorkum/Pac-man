@@ -77,13 +77,13 @@ indexFromPosition :: Grid -> Position -> Int
 indexFromPosition grid (Position x y) = x + width grid * y
 
 halfNegativeWindowSizeFromGrid :: Grid -> (Float, Float)
-halfNegativeWindowSizeFromGrid (Grid w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
+halfNegativeWindowSizeFromGrid (Grid _ w h _) = (-(fromIntegral w * 15), fromIntegral h * 15) 
 
 windowSizeFromGrid :: Grid -> (Int, Int)
-windowSizeFromGrid (Grid w h _) = (w * tileSize, h * tileSize) 
+windowSizeFromGrid (Grid _ w h _) = (w * tileSize, h * tileSize) 
 
 getTileFromGrid :: Grid -> Position -> Tile
-getTileFromGrid grid@(Grid _ _ tiles) position = case lookup (indexFromPosition grid position) tiles of
+getTileFromGrid grid@(Grid tiles _ _ _) position = case lookup (indexFromPosition grid position) tiles of
   Just (tile, _, _) -> tile
   _                 -> error "Position is outside of the Grid"
 

@@ -41,7 +41,7 @@ step secs gstate
   -- Finished (via savinghighscores)
   | playState gstate == Finished = return gstate
   | lives (player gstate) <= 0 = return $ gstate { playState = SavingHighscore }
-  | dots gstate <= 0 = return $ gstate { playState = SavingHighscore }
+  | (dots . grid) gstate <= 0 = return $ gstate { playState = SavingHighscore }
 
   -- Paused
   | playState gstate == Paused = return gstate
@@ -66,7 +66,7 @@ step secs gstate
         elapsedTime = 0,
         cyclesPassed = cyclesPassed gstate + 1,
         score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
-        dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
+        -- dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
         ghostMode = updateGhostMode (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (ghostMode gstate) (invincibilityBegin gstate) (cyclesPassed gstate),
         invincibilityBegin = updateInvicibilityBegin (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (invincibilityBegin gstate) (cyclesPassed gstate)
       }

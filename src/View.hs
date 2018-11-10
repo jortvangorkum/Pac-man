@@ -20,13 +20,16 @@ view = return . viewPure
 
 viewPure :: GameState -> Picture
 viewPure gstate = pictures [
+  -- gameplay
   viewPlayer (grid gstate) (player gstate) (nextPlayer gstate) (elapsedTime gstate), 
   viewTiles (grid gstate) ((tiles . grid) gstate), 
   viewEnemies (grid gstate) zippedEnemies (ghostMode gstate) (elapsedTime gstate),
+
+  -- info
+  viewHighScores (grid gstate) (highscores gstate) (playState gstate),
   viewScore (grid gstate) (score gstate),
   viewPlaystate (grid gstate) (playState gstate),
-  viewLives (grid gstate) (lives (player gstate)),
-  viewHighScores (grid gstate) (highscores gstate) (playState gstate)
+  viewLives (grid gstate) (lives (player gstate))
   ]
   where
     zippedEnemies = zip (enemies gstate) (nextEnemies gstate)

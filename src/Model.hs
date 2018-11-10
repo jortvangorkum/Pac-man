@@ -9,9 +9,6 @@ import Data.List hiding (lookup)
 import Data.Sequence hiding (length, zip3, replicate, Empty)
 import Graphics.Gloss
 
--- models
-import Model.LevelOne
-
 {-
   Initialization
 -}
@@ -28,22 +25,11 @@ initialState = GameState
   []                                          -- highscores
   Chase                                       -- ghost mode
   0                                           -- invincibilityBegin
-  levelOneGrid                             -- grid
-  (countAmountDots levelOneGrid)           -- amount PacDots
+  levelOneGrid                                -- grid
   (PacMan 3 initialPlayerPosition East East)  -- pacman
   (PacMan 3 initialPlayerPosition East East)  -- pacman next position
-  [
-    Blinky (Position 1 1) East (makeColor (255/255) 0 0 1),
-    Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1),
-    Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1),
-    Clyde (Position 26 30) West (makeColor (255/255) (182/255) (50/255) 1)
-  ]
-  [
-    Blinky (Position 1 1) East (makeColor (255/255) 0 0 1),
-    Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1),
-    Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1),
-    Clyde (Position 26 29) West (makeColor (255/255) (182/255) (50/255) 1)
-  ]
+  [Blinky (Position 1 1) East (makeColor (255/255) 0 0 1), Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1), Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1), Clyde (Position 26 29) West (makeColor (255/255) (182/255) (50/255) 1)]
+  [Blinky (Position 1 1) East (makeColor (255/255) 0 0 1), Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1), Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1), Clyde (Position 26 29) West (makeColor (255/255) (182/255) (50/255) 1)]
 
 {-
   Game state models
@@ -62,7 +48,6 @@ data GameState = GameState {
 
   -- name
   grid :: Grid,
-  dots :: Int,
 
   -- name
   player :: Player,
@@ -93,7 +78,7 @@ data GhostMode = Chase | Scatter | Frightened
 -}
 data Position = Position { x :: Int, y :: Int } deriving (Show, Eq)
 data Direction = North | East | South | West deriving (Show, Eq)
-data Grid = Grid { width :: Int, height :: Int, tiles :: Seq (Tile, Int, Int) }
+data Grid = Grid { tiles :: Seq (Tile, Int, Int), width :: Int, height :: Int, dots :: Int }
 data Tile = Empty | Wall WallType | PacDot | PacFruit deriving (Show, Eq)  
 data WallType = Full | Top | Right | Bottom | Left 
               | CornerFromBottomToRightOutside | CornerFromLeftToBottomOutside | CornerFromTopToLeftOutside | CornerFromRightToTopOutside 
@@ -101,13 +86,17 @@ data WallType = Full | Top | Right | Bottom | Left
               deriving (Show, Eq)  
 
 
-parseGrid :: [[Tile]] -> (Seq (Tile, Int, Int), Int, Int)
-parseGrid tiles@(first:_) = (fromList (zip3 (concat tiles) columnIndexArray rowIndexArray), width, height)
+parseGrid :: [[Tile]] -> (Seq (Tile, Int, Int), Int, Int, Int)
+parseGrid tiles@(first:_) = (fromList (zip3 (concat tiles) columnIndexArray rowIndexArray), width, height, dots)
   where 
     width = length first 
     height = length tiles
     columnIndexArray = (concat . replicate height) [0 .. width - 1]
     rowIndexArray = concat $ transpose $ replicate width [0 .. height - 1]
+    dots = countAmountDots (concat tiles)
+
+countAmountDots :: [Tile] -> Int
+countAmountDots = foldr (\tile count -> if tile == PacDot then count + 1 else count) 0
 
 levelOneTiles :: [[Tile]]
 levelOneTiles = [
@@ -164,8 +153,5 @@ levelOneTiles = [
     z = Wall CornerFromRightToTopInside
 
 levelOneGrid :: Grid
-levelOneGrid = Grid width height tiles 
-  where (tiles, width, height) = parseGrid levelOneTiles
-
-countAmountDots :: Grid -> Int
-countAmountDots grid = foldr (\(tile, x, y) count -> if tile == PacDot then count + 1 else count) 0 (tiles grid)
+levelOneGrid = Grid tiles width height dots
+  where (tiles, width, height, dots) = parseGrid levelOneTiles
