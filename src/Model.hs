@@ -10,30 +10,31 @@ import Data.Sequence hiding (length, zip3, replicate, Empty)
 import Graphics.Gloss
 
 -- models
+import Model.Data
 import Model.Grid
+import Model.Player
+import Model.Enemies
 import Model.LevelOne
+import Model.LevelTwo
 
 {-
   Initialization
 -}
 
-initialPlayerPosition :: Position
-initialPlayerPosition = Position 14 23
-
 initialState :: GameState
 initialState = GameState 
-  0                                           -- elapsed time
-  0                                           -- cycles passed
-  Initialise                                  -- play state
-  0                                           -- score
-  []                                          -- highscores
-  Chase                                       -- ghost mode
-  0                                           -- invincibilityBegin
-  levelOneGrid                                -- grid
-  (PacMan 3 initialPlayerPosition East East)  -- pacman
-  (PacMan 3 initialPlayerPosition East East)  -- pacman next position
-  [Blinky (Position 1 1) East (makeColor (255/255) 0 0 1), Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1), Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1), Clyde (Position 26 29) West (makeColor (255/255) (182/255) (50/255) 1)]
-  [Blinky (Position 1 1) East (makeColor (255/255) 0 0 1), Pinky (Position 1 29) West (makeColor (255/255) (177/255) (255/255) 1), Inky (Position 26 1) East (makeColor 0 (255/255) (255/255) 1), Clyde (Position 26 29) West (makeColor (255/255) (182/255) (50/255) 1)]
+  0                 -- elapsed time
+  0                 -- cycles passed
+  Initialise        -- play state
+  0                 -- score
+  []                -- highscores
+  Chase             -- ghost mode
+  0                 -- invincibilityBegin
+  levelOneGrid      -- grid
+  levelOnePlayer    -- pacman
+  levelOnePlayer    -- pacman next position
+  levelOneEnemies   -- enemies
+  levelOneEnemies   -- enemies next position
 
 {-
   Game state models
@@ -62,26 +63,9 @@ data GameState = GameState {
 
 data PlayState = Initialise | Playing | Paused | SavingHighscore | Finished deriving (Show, Eq)
 
-{-
-  Name
--}
-data Player = PacMan { lives :: Int, posPlayer :: Position, dirPlayer :: Direction, intendedDirPlayer  :: Direction }
-data Enemy = 
-  Blinky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
-  | Pinky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
-  | Inky { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
-  | Clyde { posEnemy :: Position, dirEnemy :: Direction, colEnemy :: Color } 
-
-{-
-  Name
--}
-data GhostMode = Chase | Scatter | Frightened
-
-{-
-  Name
--}
-data Position = Position { x :: Int, y :: Int } deriving (Show, Eq)
-data Direction = North | East | South | West deriving (Show, Eq)
 
 levelOneGrid :: Grid
 levelOneGrid = Grid tiles width height dots where (tiles, width, height, dots) = parseGrid levelOneTiles
+
+levelTwoGrid :: Grid
+levelTwoGrid = Grid tiles width height dots where (tiles, width, height, dots) = parseGrid levelTwoTiles

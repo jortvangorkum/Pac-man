@@ -2,6 +2,8 @@ module View.Player (viewPlayer) where
 
 import Model
 import Model.Grid
+import Model.Player
+import Model.Data
 import Settings
 import Helpers
 import Graphics.Gloss

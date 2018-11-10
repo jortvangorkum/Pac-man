@@ -2,6 +2,9 @@ module Controller.Interaction where
 
 import Model
 import Model.Grid
+import Model.Player
+import Model.Enemies
+import Model.Data
 import Settings
 import Helpers
 
@@ -14,7 +17,7 @@ interactPlayerWithEnemies player nextPlayer enemies = updatePosition p'
 
     updatePosition :: Player -> Player
     updatePosition updatedPlayer
-      | lives player /= lives updatedPlayer = updatedPlayer { posPlayer = initialPlayerPosition, dirPlayer = East }
+      | lives player /= lives updatedPlayer = updatedPlayer { posPlayer = Position 14 23, dirPlayer = East }
       | otherwise                           = updatedPlayer
       
     -- check if the position is the same, since in that case you are sure they are collided

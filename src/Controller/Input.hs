@@ -1,6 +1,9 @@
 module Controller.Input (input) where
 
 import Model
+import Model.Data
+import Model.LevelOne
+import Model.LevelTwo
 import Settings
 import Graphics.Gloss.Interface.IO.Game
 
@@ -15,7 +18,8 @@ inputKey (EventKey (Char c) Down _ _) gstate = case c of
   '0' -> gstate { playState = SavingHighscore }
 
   -- levels
-  '1' -> gstate { grid = levelOneGrid }
+  '1' -> gstate { grid = levelOneGrid, player = levelOnePlayer, nextPlayer = levelOnePlayer, enemies = levelOneEnemies, nextEnemies = levelOneEnemies }
+  '2' -> gstate { grid = levelTwoGrid, player = levelTwoPlayer, nextPlayer = levelTwoPlayer, enemies = levelTwoEnemies, nextEnemies = levelTwoEnemies }
 
   -- pause and restart
   'p' -> gstate { playState = togglePause (playState gstate) }

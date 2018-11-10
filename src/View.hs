@@ -11,6 +11,7 @@ import View.Info
 import Graphics.Gloss
 import Model
 import Model.Grid
+import Model.Player
 import Helpers
 import Controller
 import Settings

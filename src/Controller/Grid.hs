@@ -2,6 +2,7 @@ module Controller.Grid where
 
 import Model
 import Model.Grid
+import Model.Player
 import Settings
 import Helpers
 

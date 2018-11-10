@@ -12,6 +12,8 @@ import Controller.Grid
 
 import Model
 import Model.Grid
+import Model.Player
+import Model.Enemies
 import Helpers
 import Settings
 
@@ -67,7 +69,6 @@ step secs gstate
         elapsedTime = 0,
         cyclesPassed = cyclesPassed gstate + 1,
         score = updateScore (score gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
-        -- dots = updateAmountDots (dots gstate) (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)),
         ghostMode = updateGhostMode (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (ghostMode gstate) (invincibilityBegin gstate) (cyclesPassed gstate),
         invincibilityBegin = updateInvicibilityBegin (getTileFromGrid (grid gstate) ((posPlayer . nextPlayer) gstate)) (invincibilityBegin gstate) (cyclesPassed gstate)
       }

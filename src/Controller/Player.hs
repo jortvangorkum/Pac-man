@@ -2,6 +2,8 @@ module Controller.Player (tryDirect, updatePlayer) where
 
 import Model
 import Model.Grid
+import Model.Data
+import Model.Player
 import Settings
 import Helpers
 

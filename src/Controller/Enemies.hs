@@ -2,6 +2,8 @@ module Controller.Enemies where
 
 import Model
 import Model.Grid
+import Model.Enemies
+import Model.Data
 import Settings
 import Helpers
 
