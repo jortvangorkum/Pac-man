@@ -1,4 +1,4 @@
-module Model.LevelOne where
+module Model.Levels.LevelOne where
 
 import Model.Grid
 import Model.Data

@@ -1,7 +1,14 @@
 -- | This module contains the data types
 --   which represent the state of the game
 
-module Model where
+module Model (
+  module Model,
+  module Model.Data,
+  module Model.Grid,
+  module Model.Player,
+  module Model.Enemies,
+  module Model.Levels,
+) where
 
 import Settings
 import Prelude hiding (lookup, zip3, Right, Left)
@@ -14,8 +21,7 @@ import Model.Data
 import Model.Grid
 import Model.Player
 import Model.Enemies
-import Model.LevelOne
-import Model.LevelTwo
+import Model.Levels
 
 {-
   Initialization

@@ -1,6 +1,14 @@
 -- | This module defines how the state changes
 --   in response to time and user input
-module Controller where
+module Controller (
+  module Controller,
+  module Controller.Input,
+  module Controller.Player,
+  module Controller.Enemies,
+  module Controller.Interaction,
+  module Controller.Pathfinding,
+  module Controller.Grid
+) where
 
 -- controllers
 import Controller.Input
@@ -11,9 +19,6 @@ import Controller.Pathfinding
 import Controller.Grid
 
 import Model
-import Model.Grid
-import Model.Player
-import Model.Enemies
 import Helpers
 import Settings
 

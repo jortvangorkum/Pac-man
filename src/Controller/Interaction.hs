@@ -1,10 +1,6 @@
 module Controller.Interaction where
 
 import Model
-import Model.Grid
-import Model.Player
-import Model.Enemies
-import Model.Data
 import Settings
 import Helpers
 

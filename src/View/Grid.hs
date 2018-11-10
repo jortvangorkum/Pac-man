@@ -1,7 +1,6 @@
 module View.Grid (viewTiles) where
 
 import Model
-import Model.Grid
 import Settings
 import Helpers
 import Graphics.Gloss

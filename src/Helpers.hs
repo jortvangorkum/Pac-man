@@ -1,9 +1,6 @@
 module Helpers where
 
 import Model
-import Model.Grid
-import Model.Data
-import Model.Player
 import Settings
 import Graphics.Gloss
 import Data.Maybe

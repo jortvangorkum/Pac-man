@@ -1,9 +1,6 @@
 module View.Enemies (viewEnemies) where
 
 import Model
-import Model.Grid
-import Model.Data
-import Model.Enemies
 import Settings
 import Helpers
 import Graphics.Gloss

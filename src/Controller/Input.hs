@@ -1,9 +1,6 @@
 module Controller.Input (input) where
 
 import Model
-import Model.Data
-import Model.LevelOne
-import Model.LevelTwo
 import Settings
 import Graphics.Gloss.Interface.IO.Game
 

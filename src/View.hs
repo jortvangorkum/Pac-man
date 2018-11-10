@@ -1,6 +1,12 @@
 -- | This module defines how to turn
 --   the game state into a picture
-module View where
+module View (
+  module View,
+  module View.Player,
+  module View.Enemies,
+  module View.Grid,
+  module View.Info
+) where
 
 -- views
 import View.Player
@@ -10,8 +16,6 @@ import View.Info
 
 import Graphics.Gloss
 import Model
-import Model.Grid
-import Model.Player
 import Helpers
 import Controller
 import Settings

@@ -1,7 +1,6 @@
 module Main where
 
 import Controller
-import Controller.Input
 import Model
 import View
 import Settings
