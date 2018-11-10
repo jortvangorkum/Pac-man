@@ -22,4 +22,28 @@ executable Pac-man
                        bytestring
   hs-source-dirs:      src
   default-language:    Haskell2010
-  other-modules:       Controller, Model, View, Settings
+  other-modules:       Settings,
+                       Helpers,
+                       --  controller
+                       Controller,
+                       Controller.Enemies,
+                       Controller.Grid,
+                       Controller.Input,
+                       Controller.Interaction,
+                       Controller.Pathfinding,
+                       Controller.Player,
+                       --  model
+                       Model, 
+                       Model.Data,
+                       Model.Enemies,
+                       Model.Grid,
+                       Model.Levels,
+                       Model.Levels.LevelOne,
+                       Model.Levels.LevelTwo,
+                       Model.Player,
+                       --  view
+                       View, 
+                       View.Enemies,
+                       View.Grid,
+                       View.Info,
+                       View.Player
