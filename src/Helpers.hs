@@ -3,10 +3,12 @@ module Helpers where
 import Model
 import Settings
 import Graphics.Gloss
+import Data.Maybe
 
 {-
   View helpers
 -}
+
 -- first translate from center to top left, then translate from grid index to screen position, then offset by tile size from center to top left
 translateToGrid :: Int -> Int -> (Picture -> Picture)
 translateToGrid column row = translate 0 (-(fromIntegral topScoreBarSize/2)) . translate width height . translate column' row' . translate (tileSize' / 2) (-tileSize' / 2)
@@ -36,9 +38,29 @@ viewText size picture = scale ((t / 30) * size) ((t / 30) * size) $ color white 
     t = fromIntegral tileSize
 
 {-
-  Model helpers
--}
-
-{-
   Controller helpers
 -}
+
+move :: Position -> Direction -> Position
+move (Position x y) North = Position x (y-1)
+move (Position x y) East = Position (x + 1) y
+move (Position x y) South = Position x (y+1)
+move (Position x y) West = Position (x - 1) y
+
+getDirections :: Grid -> Position -> [Direction]
+getDirections grid (Position x y) = mapMaybe tileToDirection [(north, North), (east, East), (south, South), (west, West)]
+  where
+    north = getTileFromGrid grid (Position x (y-1))
+    east = getTileFromGrid grid (Position (x+1) y) 
+    south = getTileFromGrid grid (Position x (y+1))
+    west = getTileFromGrid grid (Position (x-1) y) 
+    tileToDirection :: (Tile, Direction) -> Maybe Direction
+    tileToDirection (tile, dir) = case tile of 
+      (Wall _) -> Nothing
+      _        -> Just dir
+
+oppositeDirection :: Direction -> Direction
+oppositeDirection North = South
+oppositeDirection East = West
+oppositeDirection South = North
+oppositeDirection West = East

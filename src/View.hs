@@ -2,17 +2,18 @@
 --   the game state into a picture
 module View where
 
+-- views
+import View.Player
+import View.Enemies
+import View.Grid
+import View.Info
+
 import Graphics.Gloss
 import Model
 import Helpers
 import Controller
 import Settings
 
--- views
-import View.Player
-import View.Enemies
-import View.Tile
-import View.Info
 
 view :: GameState -> IO Picture
 view = return . viewPure

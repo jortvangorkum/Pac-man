@@ -1,4 +1,4 @@
-module View.Tile (viewTiles) where
+module View.Grid (viewTiles) where
 
 import Model
 import Settings
