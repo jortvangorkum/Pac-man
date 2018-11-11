@@ -6,17 +6,21 @@ import Helpers
 
 import System.Random
 
-updateEnemies :: GhostMode -> [(Enemy, Direction, Direction)]-> [Enemy]
-updateEnemies ghostMode = map (updateEnemy ghostMode)
+updateEnemies :: GhostMode -> Int -> [(Enemy, Direction, Direction)]-> [Enemy]
+updateEnemies ghostMode cyclesPassed = map (updateEnemy ghostMode cyclesPassed)
 
-updateEnemy :: GhostMode -> (Enemy, Direction, Direction) -> Enemy
+updateEnemy :: GhostMode -> Int -> (Enemy, Direction, Direction) -> Enemy
 -- specific enemy behavior
 -- updateEnemy Chase (enemy@Blinky{}, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) cdir, dirEnemy = cdir }
 
 -- general enemy behavior
-updateEnemy Scatter (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
-updateEnemy Chase (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) cdir, dirEnemy = cdir }
-updateEnemy Frightened (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
+updateEnemy Scatter _ (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
+updateEnemy Chase cyclesPassed (enemy, rdir, cdir)
+    -- once every x cycles make a random movement, so that it does not become to hard
+    | cyclesPassed `mod` 8 == 0 = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
+    -- chase enemy
+    | otherwise                 = enemy { posEnemy = move (posEnemy enemy) cdir, dirEnemy = cdir }
+updateEnemy Frightened _ (enemy, rdir, cdir) = enemy { posEnemy = move (posEnemy enemy) rdir, dirEnemy = rdir }
 
 randomDirection :: Enemy -> Grid -> IO Direction
 randomDirection enemy grid = case dirs of
