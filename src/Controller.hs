@@ -62,12 +62,12 @@ step secs gstate
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
-        player = nextPlayer gstate, 
-        nextPlayer = updatePlayer (interactPlayerWithEnemies (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)) (grid gstate), 
-        enemies = nextEnemies gstate,
+        player = interactedPlayer, 
+        nextPlayer = updatePlayer interactedPlayer (grid gstate), 
+        enemies = interactedEnemies,
         nextEnemies = updateEnemies (ghostMode gstate) (cyclesPassed gstate) (zip3 
           -- (nextEnemies gstate) -- enemies
-          (interactEnemiesWithPlayer (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)) -- enemies
+          interactedEnemies -- enemies
           rdirs  -- random directions
           (map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) (nextEnemies gstate)) -- chase directions
         ),
@@ -84,3 +84,6 @@ step secs gstate
     return $ gstate { 
       elapsedTime = elapsedTime gstate + secs
     }
+    where
+      interactedPlayer = interactPlayerWithEnemies (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)
+      interactedEnemies = interactEnemiesWithPlayer (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)
