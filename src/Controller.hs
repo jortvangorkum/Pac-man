@@ -66,7 +66,6 @@ step secs gstate
         nextPlayer = updatePlayer interactedPlayer (grid gstate), 
         enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (ghostMode gstate) (cyclesPassed gstate) (zip3 
-          -- (nextEnemies gstate) -- enemies
           interactedEnemies -- enemies
           rdirs  -- random directions
           cdirs -- chase directions
