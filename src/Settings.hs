@@ -1,7 +1,5 @@
 module Settings where
 
-import Graphics.Gloss.Interface.IO.Game
-
 background :: Color
 background = black
 
