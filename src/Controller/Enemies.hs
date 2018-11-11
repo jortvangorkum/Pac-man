@@ -6,7 +6,7 @@ import Helpers
 
 import System.Random
 
-updateEnemies :: GhostMode -> Int -> [(Enemy, Direction, Direction)]-> [Enemy]
+updateEnemies :: GhostMode -> Int -> [(Enemy, Direction, Direction)] -> [Enemy]
 updateEnemies ghostMode cyclesPassed = map (updateEnemy ghostMode cyclesPassed)
 
 updateEnemy :: GhostMode -> Int -> (Enemy, Direction, Direction) -> Enemy
