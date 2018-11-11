@@ -30,7 +30,7 @@ viewEnemy grid ghostMode time (enemy, enemyNext) = extraTranslation dx dy time $
     (Position x' y') = posEnemy enemy
     size = fromIntegral tileSize / 2 
     ghostColor = case ghostMode of 
-      Scatter -> color $ makeColor 0 0 (255/255) 1
+      Frightened -> color $ makeColor 0 0 (255/255) 1
       _ -> color $ colEnemy enemy
     eyeDirectionTranslation = case dirEnemy enemyNext of 
       North -> translate 0 (size/5) 
