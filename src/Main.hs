@@ -9,14 +9,14 @@ import Helpers
 -- Graphics Library: IO Version of Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-window :: Display
-window = InWindow "Pac-Man" ((\(x,y) -> (x+spaceForSides, y+spaceForSides+topScoreBarSize)) (windowSizeFromGrid levelOneGrid)) (0, 0)
+-- window :: Display
+-- window = InWindow "Pac-Man" ((\(x,y) -> (x+spaceForSides, y+spaceForSides+topScoreBarSize)) (windowSizeFromGrid levelOneGrid)) (0, 0)
 
 {-
   Main function
 -}
 main :: IO ()
-main = playIO window           -- Or FullScreen
+main = playIO FullScreen       -- Or FullScreen
               background       -- Background color
               frames           -- Frames per second
               initialState     -- Initial state
