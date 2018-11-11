@@ -10,6 +10,7 @@ data Tile = Empty | Wall WallType | PacDot | PacFruit deriving (Show, Eq)
 data WallType = Full | Top | Right | Bottom | Left 
               | CornerFromBottomToRightOutside | CornerFromLeftToBottomOutside | CornerFromTopToLeftOutside | CornerFromRightToTopOutside 
               | CornerFromBottomToRightInside | CornerFromLeftToBottomInside | CornerFromTopToLeftInside | CornerFromRightToTopInside 
+              | CornerFromBottomToRightOutsideFilled | CornerFromLeftToBottomOutsideFilled | CornerFromTopToLeftOutsideFilled | CornerFromRightToTopOutsideFilled
               deriving (Show, Eq)  
 
 parseGrid :: [[Tile]] -> (Seq (Tile, Int, Int), Int, Int, Int)

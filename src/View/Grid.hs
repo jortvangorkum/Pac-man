@@ -23,23 +23,28 @@ tileToPicture grid (tile, x, y) = translateToGrid grid x y o
       PacDot    -> color white
       PacFruit  -> color white
     o = case tile of
-      PacDot                                -> c $ circleSolid (t / 8)
-      PacFruit                              -> c $ circleSolid (t / 3)
-      Empty                                 -> c blank
-      (Wall Top)                            -> topWall
-      (Wall Right)                          -> rotate 90 topWall
-      (Wall Bottom)                         -> rotate 180 topWall
-      (Wall Left)                           -> rotate 270 topWall
-      (Wall CornerFromBottomToRightOutside) -> bottomRightOutsideWall
-      (Wall CornerFromLeftToBottomOutside)  -> rotate 90 bottomRightOutsideWall
-      (Wall CornerFromTopToLeftOutside)     -> rotate 180 bottomRightOutsideWall
-      (Wall CornerFromRightToTopOutside)    -> rotate 270 bottomRightOutsideWall
-      (Wall CornerFromBottomToRightInside)  -> bottomRightInsideWall
-      (Wall CornerFromLeftToBottomInside)  -> rotate 90 bottomRightInsideWall
-      (Wall CornerFromTopToLeftInside)     -> rotate 180 bottomRightInsideWall
-      (Wall CornerFromRightToTopInside)    -> rotate 270 bottomRightInsideWall
-      _                                     -> c $ rectangleSolid t t
+      PacDot                                      -> c $ circleSolid (t / 8)
+      PacFruit                                    -> c $ circleSolid (t / 3)
+      Empty                                       -> c blank
+      (Wall Top)                                  -> topWall
+      (Wall Right)                                -> rotate 90 topWall
+      (Wall Bottom)                               -> rotate 180 topWall
+      (Wall Left)                                 -> rotate 270 topWall
+      (Wall CornerFromBottomToRightOutside)       -> bottomRightOutsideWall
+      (Wall CornerFromLeftToBottomOutside)        -> rotate 90 bottomRightOutsideWall
+      (Wall CornerFromTopToLeftOutside)           -> rotate 180 bottomRightOutsideWall
+      (Wall CornerFromRightToTopOutside)          -> rotate 270 bottomRightOutsideWall
+      (Wall CornerFromBottomToRightInside)        -> bottomRightInsideWall
+      (Wall CornerFromLeftToBottomInside)         -> rotate 90 bottomRightInsideWall
+      (Wall CornerFromTopToLeftInside)            -> rotate 180 bottomRightInsideWall
+      (Wall CornerFromRightToTopInside)           -> rotate 270 bottomRightInsideWall
+      (Wall CornerFromBottomToRightOutsideFilled) -> bottomRightOutsideWallFilled
+      (Wall CornerFromLeftToBottomOutsideFilled)  -> rotate 90 bottomRightOutsideWallFilled
+      (Wall CornerFromTopToLeftOutsideFilled)     -> rotate 180 bottomRightOutsideWallFilled
+      (Wall CornerFromRightToTopOutsideFilled)    -> rotate 270 bottomRightOutsideWallFilled
+      _                                           -> c $ rectangleSolid t t
       where
         topWall = c $ translate 0 (t/4) $ rectangleSolid t (t/2)
         bottomRightOutsideWall = pictures [c $ translate (t/2) (-t/2) $ arcSolid 90 180 t, color black $ translate (t/2) (-t/2) $ arcSolid 90 180 (t/2.2)]
+        bottomRightOutsideWallFilled = pictures [bottomRightOutsideWall]
         bottomRightInsideWall = c $ translate (t/2) (-t/2) $ arcSolid 90 180 (t/2.2)
