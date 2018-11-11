@@ -26,7 +26,7 @@ viewLives grid lives = translate (-t * 4.7) 0 $ translate (fromIntegral (width g
     t = fromIntegral tileSize
 
 viewHighScores :: Grid -> [Int] -> PlayState -> Picture
-viewHighScores _ [] _                       = blank
+viewHighScores _ [] _                          = blank
 viewHighScores grid scores@(score:_) playstate = case playstate of
   Finished -> pictures [color black $ rectangleSolid (fromIntegral (width grid) * sizeFromPercentage 0.5) (sizeFromPercentage 2.5 * (fromIntegral scoreAmount + 1)), translate 0 (- sizeFromPercentage 0.8 * (fromIntegral scoreAmount + 1)) scoresAsTextForBox]
   _        -> blank

@@ -1,5 +1,7 @@
 module Settings where
 
+import Graphics.Gloss
+
 background :: Color
 background = black
 

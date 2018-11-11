@@ -34,41 +34,40 @@ initialState = GameState
   Initialise        -- play state
   0                 -- score
   []                -- highscores
-  Chase             -- ghost mode
-  0                 -- invincibilityBegin
   levelOneGrid      -- grid
   levelOnePlayer    -- pacman
   levelOnePlayer    -- pacman next position
   levelOneEnemies   -- enemies
   levelOneEnemies   -- enemies next position
+  Chase             -- ghost mode
+  0                 -- invincibilityBegin
 
 {-
   Game state models
 -}
 data GameState = GameState { 
-  -- name
+  -- Game Information
   elapsedTime :: Float,
   cyclesPassed :: Int,
   playState :: PlayState,
   score :: Int,
   highscores :: [Int],
-
-  -- name
-  ghostMode  :: GhostMode,
-  invincibilityBegin :: Int,
-
-  -- name
+  
+  -- Grid
   grid :: Grid,
-
-  -- name
+  
+  -- Player
   player :: Player,
   nextPlayer :: Player,
+  
+  -- Enemies
   enemies :: [Enemy],
-  nextEnemies :: [Enemy]
+  nextEnemies :: [Enemy],
+  ghostMode  :: GhostMode,
+  invincibilityBegin :: Int
 }
 
 data PlayState = Initialise | Playing | Paused | SavingHighscore | Finished deriving (Show, Eq)
-
 
 levelOneGrid :: Grid
 levelOneGrid = Grid tiles width height dots where (tiles, width, height, dots) = parseGrid levelOneTiles

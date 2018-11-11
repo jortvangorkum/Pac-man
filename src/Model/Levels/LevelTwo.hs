@@ -8,7 +8,7 @@ import Model.Player
 import Graphics.Gloss
 import Prelude hiding (lookup, zip3, Right, Left)
 
-levelTwoPlayer = PacMan 3 (Position 14 23) (Position 14 23) East East
+levelTwoPlayer = PacMan 3 (Position 9 14) (Position 9 14) East East
 levelTwoEnemies = [
   Blinky (Position 1 1) (Position 1 1) East (makeColor (255/255) 0 0 1), 
   Pinky (Position 1 (height - 3)) (Position 1 (height - 3)) West (makeColor (255/255) (177/255) (255/255) 1), 

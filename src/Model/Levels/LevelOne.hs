@@ -8,7 +8,7 @@ import Model.Player
 import Graphics.Gloss
 import Prelude hiding (lookup, zip3, Right, Left)
 
-levelOnePlayer = PacMan 3 (Position 14 23) (Position 14 23) East East
+levelOnePlayer = PacMan 3 (Position 14 14) (Position 14 14) East East
 levelOneEnemies = [
   Blinky (Position 1 1) (Position 1 1) East (makeColor (255/255) 0 0 1), 
   Pinky (Position 1 (height - 2)) (Position 1 (height - 2)) West (makeColor (255/255) (177/255) (255/255) 1), 
@@ -34,9 +34,9 @@ levelOneTiles = [
   [e, e, e, e, e, l, d, r, m, t, t, y, d, z, y, d, z, t, t, n, l, d, r, e, e, e, e, e],
   [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
   [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
-  [m, t, t, t, t, y, d, z, y, d, d, e, e, e, e, e, e, d, d, z, y, d, z, t, t, t, t, n],
-  [l, d, d, d, d, d, d, d, d, d, d, e, e, e, e, e, e, d, d, d, d, d, d, d, d, d, d, r],
-  [p, b, b, b, b, x, d, q, x, d, d, e, e, e, e, e, e, d, d, q, x, d, q, b, b, b, b, o],
+  [m, t, t, t, t, y, d, z, y, d, d, d, d, d, d, d, d, d, d, z, y, d, z, t, t, t, t, n],
+  [l, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, r],
+  [p, b, b, b, b, x, d, q, x, d, d, d, d, d, d, d, d, d, d, q, x, d, q, b, b, b, b, o],
   [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
   [e, e, e, e, e, l, d, r, l, d, d, d, d, d, d, d, d, d, d, r, l, d, r, e, e, e, e, e],
   [e, e, e, e, e, l, d, r, l, d, q, b, b, b, b, b, b, x, d, r, l, d, r, e, e, e, e, e],

@@ -9,7 +9,7 @@ pathFinding enemy target grid
   | length possibleDirections > 1   = getBestDirection possibleDirections current target
   -- we can use head, since we are sure there is an element in the array, and pattern matching is not possible in this case, since it throws an error
   | length possibleDirections == 1  = head possibleDirections
-  -- if ghost chases and gets stuck in an alley
+  -- if ghost gets stuck in an alley
   | otherwise                       = oppositeDirection (dirEnemy enemy)
   where
     possibleDirections :: [Direction]
