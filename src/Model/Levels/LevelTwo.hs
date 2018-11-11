@@ -8,12 +8,12 @@ import Model.Player
 import Graphics.Gloss
 import Prelude hiding (lookup, zip3, Right, Left)
 
-levelTwoPlayer = PacMan 3 (Position 14 23) East East
+levelTwoPlayer = PacMan 3 (Position 14 23) (Position 14 23) East East
 levelTwoEnemies = [
-  Blinky (Position 1 1) East (makeColor (255/255) 0 0 1), 
-  Pinky (Position 1 (height - 3)) West (makeColor (255/255) (177/255) (255/255) 1), 
-  Inky (Position (width - 2) 1) East (makeColor 0 (255/255) (255/255) 1), 
-  Clyde (Position (width - 2) (height - 2)) West (makeColor (255/255) (182/255) (50/255) 1)]
+  Blinky (Position 1 1) (Position 1 1) East (makeColor (255/255) 0 0 1), 
+  Pinky (Position 1 (height - 3)) (Position 1 (height - 3)) West (makeColor (255/255) (177/255) (255/255) 1), 
+  Inky (Position (width - 2) 1) (Position (width - 2) 1) East (makeColor 0 (255/255) (255/255) 1), 
+  Clyde (Position (width - 2) (height - 2)) (Position (width - 2) (height - 2)) West (makeColor (255/255) (182/255) (50/255) 1)]
   where
     tiles@(first:_) = levelTwoTiles
     width = length first

@@ -57,19 +57,19 @@ step secs gstate
   -- Playing
   | elapsedTime gstate + secs > secondsBetweenCycles && playState gstate == Playing = do 
       -- Random Directions
-      rdirs <- mapM (`randomDirection` grid gstate) (nextEnemies gstate)
+      rdirs <- mapM (`randomDirection` grid gstate) interactedEnemies
       return $ gstate {
         -- grid
         grid = gridAfterUpdate (grid gstate) (nextPlayer gstate),
         -- movables
-        player = interactedPlayer, 
+        player = nextPlayer gstate, 
         nextPlayer = updatePlayer interactedPlayer (grid gstate), 
-        enemies = interactedEnemies,
+        enemies = nextEnemies gstate,
         nextEnemies = updateEnemies (ghostMode gstate) (cyclesPassed gstate) (zip3 
           -- (nextEnemies gstate) -- enemies
           interactedEnemies -- enemies
           rdirs  -- random directions
-          (map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) (nextEnemies gstate)) -- chase directions
+          cdirs -- chase directions
         ),
         -- time
         elapsedTime = 0,
@@ -85,5 +85,6 @@ step secs gstate
       elapsedTime = elapsedTime gstate + secs
     }
     where
+      cdirs = map (\enemy -> pathFinding enemy ((posPlayer . player) gstate) (grid gstate)) interactedEnemies
       interactedPlayer = interactPlayerWithEnemies (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)
       interactedEnemies = interactEnemiesWithPlayer (nextPlayer gstate) (updatePlayer (nextPlayer gstate) (grid gstate)) (nextEnemies gstate) (ghostMode gstate)

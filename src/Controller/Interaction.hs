@@ -8,7 +8,7 @@ interactPlayerWithEnemies :: Player -> Player -> [Enemy] -> GhostMode -> Player
 interactPlayerWithEnemies player nextPlayer enemies ghostMode
   | collided = case ghostMode of 
     Frightened -> player
-    _          -> player { lives = lives player - 1, posPlayer = Position 14 23 }
+    _          -> player { lives = lives player - 1, posPlayer = initPosPlayer player }
   | otherwise   = player
   where
     collided = any (playerCollidedWithEnemy player nextPlayer) enemies
@@ -19,7 +19,7 @@ interactEnemiesWithPlayer player nextPlayer enemies ghostMode = map enemyCollide
     enemyCollidedWithPlayer :: Enemy -> Enemy    
     enemyCollidedWithPlayer enemy 
       | collided = case ghostMode of
-        Frightened -> enemy { posEnemy = Position 1 1 }
+        Frightened -> enemy { posEnemy = initPosEnemy enemy }
         _          -> enemy
       | otherwise   = enemy
       where
